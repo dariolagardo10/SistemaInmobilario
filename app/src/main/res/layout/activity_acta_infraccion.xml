@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:nestedScrollingEnabled="false"
+    android:fillViewport="true"
+    tools:context=".ActaInfraccionActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ACTA DE INFRACCIÓN"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Datos del propietario -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATOS DEL PROPIETARIO"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/etPropietario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre y Apellido" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/etDomicilio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Domicilio" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/etLugarInfraccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Lugar de Infracción" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Datos del inmueble -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATOS DEL INMUEBLE"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp">
+
+                <EditText
+                    android:id="@+id/etSeccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Sección" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp">
+
+                <EditText
+                    android:id="@+id/etChacra"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Chacra" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp">
+
+                <EditText
+                    android:id="@+id/etManzana"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Manzana" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp">
+
+                <EditText
+                    android:id="@+id/etParcela"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Parcela" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp">
+
+                <EditText
+                    android:id="@+id/etLote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Lote" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp">
+
+                <EditText
+                    android:id="@+id/etPartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Partida" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Causas/Faltas -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CAUSAS/FALTAS"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <CheckBox
+                android:id="@+id/cbCartelObra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cartel de Obra Reglamentario (punto 2.2.12 C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbDispositivosSeguridad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dispositivos de Seguridad (punto 4.14 y anexos C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbNumeroPermiso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nº Permiso (punto 2.2.6 y anexos C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbMaterialesVereda"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Materiales en Vereda (punto 3.5.2.4 C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbCercoObra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cerco de Obra (punto 4.1 y anexos C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbPlanosAprobados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Planos Aprobados (punto 2.1.8.7 C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbDirectorObra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Director de Obra (punto 2.4.1 C.E.P.)" />
+
+            <CheckBox
+                android:id="@+id/cbVarios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Varios" />
+        </LinearLayout>
+
+        <!-- Información adicional -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/etBoletaInspeccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Boleta de Inspección Nº" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/etObservaciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Observaciones"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:gravity="top|start" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Añadir después de los campos existentes, antes de los botones -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Firma del Infractor"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <es.rcti.demoprinterplus.sistemainmobilario.SignatureView
+                android:id="@+id/signatureView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="#F8F8F8"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
+
+            <Button
+                android:id="@+id/btnClearSignature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Borrar firma"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Imágenes de Prueba"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+
+            <Button
+                android:id="@+id/btnAddImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Agregar imágenes"
+                android:layout_marginTop="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvImages"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+        <!-- Botones de acción -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Guardar"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <Button
+                android:id="@+id/btnImprimir"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Imprimir"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

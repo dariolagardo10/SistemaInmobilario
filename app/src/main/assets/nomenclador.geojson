@@ -1,0 +1,815 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.104",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606449.46270221, 6973490.43675755]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 104,
+        "id": null,
+        "UBICACION": "CENTENARIO Y AGUADO",
+        "ALTURA": "CENTENARIO: 5000-4900 Y AGUADO: 1900-1800",
+        "SENTIDO": "CENTENARIO: OESTE-ESTE Y AGUADO: NORTE-SUR",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "116",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.105",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606499.73000042, 6973431.95056677]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 105,
+        "id": null,
+        "UBICACION": "CENTENARIO Y AGUADO",
+        "ALTURA": "CENTENARIO: 4900-4800 Y AGUADO: 5000-4900",
+        "SENTIDO": "CENTENARIO: OESTE-ESTE Y AGUADO: SUR-NORTE",
+        "CANTIDAD": "1 POSTE Y 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "90",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.106",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607184.81566074, 6973392.84178134]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 106,
+        "id": null,
+        "UBICACION": "CENTENARIO Y SAN MARTIN",
+        "ALTURA": "CENTENARIO: 4500-4100 Y SAN MARTIN: 1900-1600",
+        "SENTIDO": "CENTENARIO: OESTE-ESTE Y SAN MARTIN: NORTE-SUR",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "87",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.107",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607557.78195956, 6973344.57390203]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 107,
+        "id": null,
+        "UBICACION": "CENTENARIO Y TOMAS GUIDO",
+        "ALTURA": "CENTENARIO: 4100-3700 Y TOMAS GUIDO: 1600-1900",
+        "SENTIDO": "OESTE-ESTE Y NORTE-SUR",
+        "CANTIDAD": "1 POSTE Y 2 CARTES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "66",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.108",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607603.24748441, 6973297.08371594]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 108,
+        "id": null,
+        "UBICACION": "CENTENARIO Y TOMAS GUIDO",
+        "ALTURA": "3700-3500 Y 1700-1600",
+        "SENTIDO": "OESTE-ESTE Y SUR-NORTE",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "64",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.109",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607946.31525518, 6973277.49863615]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 109,
+        "id": null,
+        "UBICACION": "CENTENARIO Y SANTA CATALINA",
+        "ALTURA": "3100-3300 Y 1900-1700",
+        "SENTIDO": "OESTE-ESTE Y NORTE-SUR",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "65",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.110",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607962.25017059, 6973255.14517334]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 110,
+        "id": null,
+        "UBICACION": "CENTENARIO Y SANTA CATALINA",
+        "ALTURA": "3300-2900 Y 1900-2100",
+        "SENTIDO": "OESTE-ESTE Y SUR-NORTE",
+        "CANTIDAD": "1 POSTE Y 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "45",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.111",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608309.56548155, 6973237.58603037]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 111,
+        "id": null,
+        "UBICACION": "CENTENARIO Y LAVALLE",
+        "ALTURA": "3000-2900 Y 1900-1800",
+        "SENTIDO": "OESTE-ESTE Y NORTE-SUR",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "44",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.112",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608341.99392432, 6973196.42740921]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 112,
+        "id": null,
+        "UBICACION": "CENTENARIO Y LAVALLE",
+        "ALTURA": "2900-2800 Y 1900-2100",
+        "SENTIDO": "OESTE-ESTE Y SUR-NORTE",
+        "CANTIDAD": "1 POSTE Y 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "41",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.113",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608682.56396885, 6973163.81141978]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 113,
+        "id": null,
+        "UBICACION": "CENTENARIO-CORRIENTES",
+        "ALTURA": "2600-2500 Y 1900-2000",
+        "SENTIDO": "OESTE-ESTE Y NORTE SUR",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "41",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.114",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606396.99473855, 6973125.39803971]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 114,
+        "id": null,
+        "UBICACION": "TACUARI Y AGUADO",
+        "ALTURA": "5100-4900 Y 2300-2200",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "106",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.115",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606454.63352277, 6973063.29412271]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 115,
+        "id": null,
+        "UBICACION": "TACUARI Y AGUADO",
+        "ALTURA": "4900-4800 Y 2400-2300",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "91",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.116",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607510.06660765, 6972982.45891776]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 116,
+        "id": null,
+        "UBICACION": "TACUARI Y TOMAS GUIDO",
+        "ALTURA": "3900-3700 Y 2300-2200",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "67",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.117",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607887.12569191, 6972919.92786925]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 117,
+        "id": null,
+        "UBICACION": "TACUARI Y SANTA CATALINA",
+        "ALTURA": "3450-3300 Y 2300-2100",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "64",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.118",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607919.51831312, 6972874.62407378]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 118,
+        "id": null,
+        "UBICACION": "TACUARI Y SANTA CATALINA",
+        "ALTURA": "3300-3200 Y 2300-2600",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "46",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.119",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608255.07668305, 6972874.49583273]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 119,
+        "id": null,
+        "UBICACION": "TACUARI Y LAVALLE",
+        "ALTURA": "3100-2900 Y 2300-2200",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "45",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.120",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608293.74079066, 6972820.8426966]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 120,
+        "id": null,
+        "UBICACION": "TACUARI Y LAVALLE",
+        "ALTURA": "2900-2800 Y 3100-2900",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "40",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.121",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606344.42653069, 6972763.76603673]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 121,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y AGUADO",
+        "ALTURA": "5000-4900 Y 2600-2550",
+        "SENTIDO": "O-E Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "105",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.122",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606403.0395985, 6972692.17595949]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 122,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y AGUADO",
+        "ALTURA": "4900-4700 Y 2600-2650",
+        "SENTIDO": "O-E Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "92",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.123",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606720.5179997, 6972711.94160564]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 123,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y LAS HERAS",
+        "ALTURA": "4600-4500 Y 2600-2550",
+        "SENTIDO": "O-E Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "91",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.124",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606781.20286478, 6972635.59272975]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 124,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y LAS HERAS",
+        "ALTURA": "4500-4400 Y 2700-2600",
+        "SENTIDO": "O-E Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "84",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.125",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607451.70591441, 6972627.39685333]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 125,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y TOMAS GUIDO",
+        "ALTURA": "3800-3700 Y 2600-2500",
+        "SENTIDO": "O-E Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "68",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.126",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607515.04029739, 6972552.20580176]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 126,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y TOMAS GUIDO",
+        "ALTURA": "3700-3600 Y 2600-2700",
+        "SENTIDO": "O-E Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "62",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.127",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607817.83075687, 6972585.69579208]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 127,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y SANTA CATALINA",
+        "ALTURA": "3500-3300 Y 2600-2500",
+        "SENTIDO": "O-E Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "63",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.128",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607895.22259886, 6972485.50007575]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 128,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y SANTA CATALINA",
+        "ALTURA": "3300-3100 Y 3000-2600",
+        "SENTIDO": "O-E Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "47",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.129",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608197.96605641, 6972513.64976605]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 129,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y LAVALLE",
+        "ALTURA": "3200-2900 Y 2600-2500",
+        "SENTIDO": "O-E Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "46",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.130",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608251.30029702, 6972444.46621775]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 130,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y LAVALLE",
+        "ALTURA": "2900-2800 Y 2600-2800",
+        "SENTIDO": "O-E Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "39",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.131",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608584.75259788, 6972416.65354063]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 131,
+        "id": null,
+        "UBICACION": "LOPEZ Y PLANES Y FRANCISCO DE HARO",
+        "ALTURA": "2600-2500 Y 2600-2700 (VINILO SIN HACER)",
+        "SENTIDO": "O-E Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "39",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.132",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606297.31743729, 6972390.97976062]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 132,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y AGUADO",
+        "ALTURA": "5000-4900 Y 3000-2800",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "104",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.133",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6606360.14898454, 6972318.16867007]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 133,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y AGUADO",
+        "ALTURA": "4900-4700 Y 3000-3070",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "93",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.134",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607408.69055574, 6972242.73028007]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 134,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y TOMAS GUIDO",
+        "ALTURA": "3800-3700 Y 3000-2800",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "69",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.135",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607469.4411539, 6972174.67033226]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 135,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y TOMAS GUIDO",
+        "ALTURA": "3700-3500 Y 3000-3100",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "61",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.136",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607780.55331778, 6972193.27899122]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 136,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y SANTA CATALINA",
+        "ALTURA": "3500-3300 Y 3000-2900",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "62",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.137",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6607830.73637812, 6972126.49431949]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 137,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y SANTA CATALINA",
+        "ALTURA": "3300-3200 Y 3000-3100",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "48",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.138",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608153.41914279, 6972137.88382814]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 138,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y LAVALLE",
+        "ALTURA": "3000-2900 Y 3000-2900",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "47",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.139",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608202.58404565, 6972075.84546668]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 139,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y LAVALLE",
+        "ALTURA": "2900-2700 Y 3000-3100",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "38",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.140",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608533.11973372, 6972078.27044217]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 140,
+        "id": null,
+        "UBICACION": "BLAS PARERA Y FRANCISCO DE HARO",
+        "ALTURA": "2600-2500 Y 3000-2900",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "39",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.141",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608046.99104831, 6970982.20733741]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 141,
+        "id": null,
+        "UBICACION": "CHACABUCO Y LAVALLE",
+        "ALTURA": "2900-2700 Y 4200-4300",
+        "SENTIDO": "E-O Y N-S",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "35",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.142",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608020.54595205, 6971019.1756811]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 142,
+        "id": null,
+        "UBICACION": "CHACABUCO Y LAVALLE",
+        "ALTURA": "2900-3000 Y 4200-4100",
+        "SENTIDO": "E-O Y S-N",
+        "CANTIDAD": "1P Y 2C",
+        "ESTADO": "COMPLETO",
+        "CHARA": "50",
+        "PAR": "INSTALADO"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Nomencladorescompleto.143",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6608622.83473613, 6972776.14325618]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "fid": 143,
+        "id": null,
+        "UBICACION": "TACUARI-CORRIENTES",
+        "ALTURA": null,
+        "SENTIDO": "OESTE-ESTE Y NORTE SUR",
+        "CANTIDAD": "1 POSTE 2 CARTELES",
+        "ESTADO": "COMPLETO",
+        "CHARA": "41",
+        "PAR": "INSTALADO"
+      }
+    }
+  ],
+  "totalFeatures": 40,
+  "numberMatched": 40,
+  "numberReturned": 40,
+  "timeStamp": "2025-01-30T12:09:11.346Z",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::5348"
+    }
+  }
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Posadas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplify-js/1.2.4/simplify.min.js"></script>
+    <script src="simplify.min.js"></script>
+    <style>
+    body { margin: 0; padding: 0; }
+    #map { height: 100vh; width: 100vw; }
+    .loading, .info-panel, .search-container, .progress-bar { position: absolute; z-index: 1000; font-family: Arial, sans-serif; }
+    .loading {
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .search-container {
+      top: 10px; left: 50%; transform: translateX(-50%);
+      background: white; padding: 10px; border-radius: 5px;
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 90%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .search-container select, .search-container input, .search-container button {
+      padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+    }
+    .search-container button {
+      background: #4CAF50; color: white; cursor: pointer;
+    }
+    .search-container button:hover { background: #45a049; }
+    .progress-bar { width: 90%; bottom: 10px; left: 50%; transform: translateX(-50%); background: #eee; height: 8px; border-radius: 4px; display: none; }
+    .progress { background: #4CAF50; height: 100%; width: 0%; border-radius: 4px; }
+    .info-panel {
+      bottom: 20px; right: 20px; max-width: 300px; max-height: 400px;
+      background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow-y: auto;
+    }
+    .info-panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .info-panel td { padding: 4px; border-bottom: 1px solid #ddd; }
+    .close-btn { position: absolute; top: 5px; right: 5px; background: #f44336; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+<div class="search-container">
+    <select id="sectionSelect"></select>
+    <input type="text" id="searchInput" placeholder="Buscar FINCA, LOTE o PART">
+    <button onclick="loadGeoJson()">Cargar</button>
+</div>
+
+<div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
+<div id="loading" class="loading" style="display: none;">Cargando datos...</div>
+<div id="map"></div>
+<div id="infoPanel" class="info-panel" style="display: none;">
+    <button class="close-btn" onclick="closeInfoPanel()">&times;</button>
+    <div id="parcelInfo"></div>
+</div>
+
+<script>
+    let map = L.map('map').setView([-27.3675, -55.8966], 13);
+    let geoJsonLayer, selectedLayer;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+    const sectionSelect = document.getElementById('sectionSelect');
+    for (let i = 1; i <= 27; i++) {
+      if (i === 4) continue;
+      let val = i.toString().padStart(3, '0');
+      let opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = `Sección ${val}`;
+      sectionSelect.appendChild(opt);
+    }
+
+    function simplifyGeometry(geometry, tolerance = 0.000025) {
+      const applySimplify = coords => simplify(coords.map(c => ({ x: c[0], y: c[1] })), tolerance, false).map(p => [p.x, p.y]);
+      if (geometry.type === 'Polygon') {
+        return { type: 'Polygon', coordinates: geometry.coordinates.map(ring => applySimplify(ring)) };
+      } else if (geometry.type === 'MultiPolygon') {
+        return { type: 'MultiPolygon', coordinates: geometry.coordinates.map(p => p.map(r => applySimplify(r))) };
+      }
+      return geometry;
+    }
+
+    function closeInfoPanel() {
+      document.getElementById('infoPanel').style.display = 'none';
+      if (selectedLayer) geoJsonLayer.resetStyle(selectedLayer);
+    }
+
+    function loadGeoJson() {
+      const section = sectionSelect.value;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      if (!section) return alert("Seleccione una sección");
+      const loading = document.getElementById('loading');
+      const bar = document.getElementById('progressBar');
+      const prog = document.getElementById('progress');
+      loading.style.display = 'block'; bar.style.display = 'block'; prog.style.width = '0%';
+
+      closeInfoPanel();
+      if (geoJsonLayer) map.removeLayer(geoJsonLayer);
+
+      try {
+        let geoJsonData;
+        if (typeof Android !== 'undefined' && Android.getGeoJsonData) {
+          geoJsonData = Android.getGeoJsonData(section);
+          handleGeoJson(JSON.parse(geoJsonData), search);
+        } else {
+          fetch(`SEC_${section}.geojson`).then(r => r.json()).then(data => handleGeoJson(data, search));
+        }
+      } catch (e) {
+        alert("Error general: " + e.message);
+        loading.style.display = bar.style.display = 'none';
+      }
+    }
+
+    function handleGeoJson(data, searchText) {
+      const features = data.features.filter(f => {
+        const props = f.properties || {};
+        return !searchText ||
+          (props.FINCA && props.FINCA.toString().toLowerCase().includes(searchText)) ||
+          (props.LOTE && props.LOTE.toString().toLowerCase().includes(searchText)) ||
+          (props.PART && props.PART.toString().toLowerCase().includes(searchText));
+      }).map(f => {
+        let clone = JSON.parse(JSON.stringify(f));
+        if (data.features.length > 200) {
+          clone.geometry = simplifyGeometry(f.geometry);
+        }
+        return clone;
+      });
+
+      if (!features.length) {
+        alert("No se encontraron parcelas");
+        document.getElementById('loading').style.display = document.getElementById('progressBar').style.display = 'none';
+        return;
+      }
+
+      const style = { weight: 1, opacity: 0.7, color: '#3388ff', fillOpacity: 0.2 };
+      geoJsonLayer = L.geoJSON({ type: "FeatureCollection", features }, {
+        style,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            click: function(e) {
+              if (selectedLayer) geoJsonLayer.resetStyle(selectedLayer);
+              selectedLayer = layer;
+              layer.setStyle({ weight: 3, color: '#ff0000', fillOpacity: 0.5 });
+              showParcelInfo(feature.properties);
+              L.DomEvent.stopPropagation(e);
+            }
+          });
+        }
+      }).addTo(map);
+      map.fitBounds(geoJsonLayer.getBounds());
+      document.getElementById('loading').style.display = document.getElementById('progressBar').style.display = 'none';
+    }
+
+    function showParcelInfo(props) {
+      if (!props) return;
+      let html = '<table>';
+      for (let k in props) {
+        if (props[k]) html += `<tr><td><strong>${k}</strong></td><td>${props[k]}</td></tr>`;
+      }
+      html += '</table>';
+      html += '<button onclick="sendToApp()" style="margin-top: 10px; padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Enviar a App</button>';
+      document.getElementById('parcelInfo').innerHTML = html;
+      document.getElementById('infoPanel').style.display = 'block';
+      window.currentParcelProperties = props;
+    }
+
+    function sendToApp() {
+      if (window.Android && window.currentParcelProperties) {
+        const jsonData = JSON.stringify(window.currentParcelProperties);
+        window.Android.sendParcelData(jsonData);
+      } else {
+        alert('Función solo disponible en la app o no hay parcela seleccionada');
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', e => {
+      if (e.key === 'Enter') loadGeoJson();
+    });
+    map.on('click', closeInfoPanel);
+  </script>
+</body>
+</html>
