@@ -3,45 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="#FFFFFF">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Firma del Infractor"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="#EEEEEE"/>
 
     <es.rcti.demoprinterplus.sistemainmobilario.SignatureView
         android:id="@+id/fullscreenSignatureView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFFFFF" />
+        android:background="#FFFFFF"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:padding="16dp"
+        android:background="#EEEEEE">
 
-        <ImageButton
+        <Button
             android:id="@+id/btnClearFullscreenSignature"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="Borrar firma" />
-
-        <View
             android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="BORRAR"
+            android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btnCancelSignature"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Cancelar"
+            android:layout_weight="1"
+            android:text="CANCELAR"
             android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btnSaveSignature"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Guardar" />
+            android:layout_weight="1"
+            android:text="GUARDAR" />
     </LinearLayout>
-
 </LinearLayout>

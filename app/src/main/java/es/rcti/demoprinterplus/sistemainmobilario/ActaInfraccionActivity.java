@@ -284,6 +284,12 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             signatureView.clear();
         });
 
+        // Nuevo listener para el botón de expandir firma
+        Button btnExpandSignature = findViewById(R.id.btnExpandSignature);
+        btnExpandSignature.setOnClickListener(v -> {
+            showFullscreenSignatureDialog();
+        });
+
         // Modificar para abrir la opción de cámara o galería
         btnAddImages.setOnClickListener(v -> {
             // Verificar si ya alcanzamos el límite de imágenes
@@ -323,28 +329,25 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         Window window = dialog.getWindow();
         if (window != null) {
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-            // Asegurar que el diálogo sea táctil sin interferencias
-            window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-            window.addFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
+            // Configuración adicional para asegurar pantalla completa
+            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
 
         SignatureView fullScreenSignature = dialog.findViewById(R.id.fullscreenSignatureView);
+        Button btnClear = dialog.findViewById(R.id.btnClearFullscreenSignature);
         Button btnSave = dialog.findViewById(R.id.btnSaveSignature);
         Button btnCancel = dialog.findViewById(R.id.btnCancelSignature);
-        ImageButton btnClear = dialog.findViewById(R.id.btnClearFullscreenSignature);
 
-        // Configuración optimizada para mejor sensibilidad
-        fullScreenSignature.setStrokeWidth(2.5f);  // Línea más fina para mayor precisión
-        fullScreenSignature.setMinWidth(1.0f);     // Ancho mínimo menor
-        fullScreenSignature.setMaxWidth(4.0f);     // Ancho máximo menor
-        fullScreenSignature.setVelocityFilterWeight(0.8f); // Mayor sensibilidad a velocidad
+        // Configuración óptima para mejor sensibilidad y precisión
+        fullScreenSignature.setStrokeWidth(7f);  // Línea más gruesa para mejor visibilidad
         fullScreenSignature.setPenColor(Color.BLUE);
-        fullScreenSignature.setBackgroundColor(Color.WHITE);
 
         // Si ya hay una firma, transferirla al control de pantalla completa
         if (signatureView.hasSignature()) {
             Bitmap currentSignature = signatureView.getBitmap();
-            fullScreenSignature.setBitmap(currentSignature);
+            if (currentSignature != null) {
+                fullScreenSignature.setBitmap(currentSignature);
+            }
         }
 
         btnSave.setOnClickListener(v -> {
@@ -355,12 +358,16 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
             // Transferir la firma al control original
             Bitmap signature = fullScreenSignature.getBitmap();
-            signatureView.setBitmap(signature);
+            if (signature != null) {
+                signatureView.clear(); // Limpiar firma anterior
+                signatureView.setBitmap(signature);
+            }
             dialog.dismiss();
         });
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
         btnClear.setOnClickListener(v -> fullScreenSignature.clear());
+
         dialog.show();
     }
 

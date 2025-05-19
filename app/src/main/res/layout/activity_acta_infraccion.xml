@@ -264,20 +264,34 @@
                 android:gravity="top|start" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Añadir después de los campos existentes, antes de los botones -->
-
+        <!-- Sección de Firma modificada -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="16dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Firma del Infractor"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Firma del Infractor"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Toque para expandir"
+                    android:textStyle="italic"
+                    android:textSize="12sp"
+                    android:textColor="#0066CC"/>
+            </LinearLayout>
 
             <es.rcti.demoprinterplus.sistemainmobilario.SignatureView
                 android:id="@+id/signatureView"
@@ -289,13 +303,30 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"/>
 
-            <Button
-                android:id="@+id/btnClearSignature"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Borrar firma"
-                android:layout_gravity="end"
-                android:layout_marginTop="8dp"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/btnExpandSignature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Firmar en pantalla completa"
+                    android:layout_marginEnd="4dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+                <Button
+                    android:id="@+id/btnClearSignature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Borrar firma"
+                    android:layout_marginStart="4dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

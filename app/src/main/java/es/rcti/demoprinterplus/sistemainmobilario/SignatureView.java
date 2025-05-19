@@ -18,6 +18,11 @@ public class SignatureView extends View {
     private Path currentPath;
     private Paint paint;
     private boolean isEmpty = true;
+    private Bitmap savedBitmap = null;
+
+    // Variables para rastrear el último punto
+    private float lastTouchX;
+    private float lastTouchY;
 
     // Para compatibilidad con tu interfaz
     public interface OnSignatureListener {
@@ -64,6 +69,11 @@ public class SignatureView extends View {
         // Fondo blanco
         canvas.drawColor(Color.WHITE);
 
+        // Si hay un bitmap guardado, dibújalo primero
+        if (savedBitmap != null) {
+            canvas.drawBitmap(savedBitmap, 0, 0, null);
+        }
+
         // Dibuja todos los trazos completados
         for (Path path : paths) {
             canvas.drawPath(path, paint);
@@ -75,6 +85,9 @@ public class SignatureView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // Solicitar que el padre no intercepte eventos táctiles
+        getParent().requestDisallowInterceptTouchEvent(true);
+
         float x = event.getX();
         float y = event.getY();
 
@@ -83,6 +96,8 @@ public class SignatureView extends View {
                 // INICIO DEL TRAZO: cuando el dedo toca la pantalla
                 currentPath = new Path();
                 currentPath.moveTo(x, y);
+                lastTouchX = x;
+                lastTouchY = y;
                 isEmpty = false;
                 if (signatureListener != null) {
                     signatureListener.onSignatureDrawn(true);
@@ -91,14 +106,26 @@ public class SignatureView extends View {
 
             case MotionEvent.ACTION_MOVE:
                 // CONTINUACIÓN DEL TRAZO: mientras el dedo se desliza
-                currentPath.lineTo(x, y);
+                // Verificar si la distancia es suficiente antes de dibujar
+                float dx = Math.abs(x - lastTouchX);
+                float dy = Math.abs(y - lastTouchY);
+
+                if (dx >= 2 || dy >= 2) {
+                    currentPath.lineTo(x, y);
+                    lastTouchX = x;
+                    lastTouchY = y;
+                }
                 break;
 
             case MotionEvent.ACTION_UP:
                 // FINALIZACIÓN DEL TRAZO: cuando el dedo se levanta
+                currentPath.lineTo(x, y);  // Asegurar que se dibuje el punto final
                 paths.add(currentPath);
                 currentPath = new Path();
                 break;
+
+            default:
+                return false;
         }
 
         // Solicita redibujar la vista con el nuevo trazo
@@ -110,6 +137,7 @@ public class SignatureView extends View {
         paths.clear();
         currentPath = new Path();
         isEmpty = true;
+        savedBitmap = null;
         if (signatureListener != null) {
             signatureListener.onSignatureDrawn(false);
         }
@@ -117,15 +145,20 @@ public class SignatureView extends View {
     }
 
     public boolean hasSignature() {
-        return !isEmpty;
+        return !isEmpty || savedBitmap != null;
     }
 
     public Bitmap getBitmap() {
-        if (isEmpty) return null;
+        if (isEmpty && savedBitmap == null) return null;
 
         Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.WHITE);
+
+        // Si hay un bitmap guardado, dibújalo primero
+        if (savedBitmap != null) {
+            canvas.drawBitmap(savedBitmap, 0, 0, null);
+        }
 
         // Dibuja todos los trazos en el bitmap
         for (Path path : paths) {
@@ -136,10 +169,24 @@ public class SignatureView extends View {
         return bitmap;
     }
 
-    // Métodos adicionales para compatibilidad
-
+    // Método corregido para establecer un bitmap existente
     public void setBitmap(Bitmap bitmap) {
         if (bitmap != null) {
+            // Redimensionar el bitmap si es necesario
+            if (bitmap.getWidth() != getWidth() || bitmap.getHeight() != getHeight()) {
+                float scale = Math.min(
+                        (float) getWidth() / bitmap.getWidth(),
+                        (float) getHeight() / bitmap.getHeight()
+                );
+
+                int newWidth = Math.round(bitmap.getWidth() * scale);
+                int newHeight = Math.round(bitmap.getHeight() * scale);
+
+                this.savedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+            } else {
+                this.savedBitmap = bitmap;
+            }
+
             isEmpty = false;
             invalidate();
         }
@@ -155,7 +202,6 @@ public class SignatureView extends View {
     }
 
     // Métodos de configuración
-
     public void setStrokeWidth(float width) {
         paint.setStrokeWidth(width);
     }
@@ -164,33 +210,22 @@ public class SignatureView extends View {
         paint.setColor(color);
     }
 
-    // Métodos vacíos para compatibilidad
-
+    // Métodos para configuración de sensibilidad
     public void setMinWidth(float minWidth) {
-        // No utilizado
+        // Implementar si se necesita
     }
 
     public void setMaxWidth(float maxWidth) {
-        // No utilizado
+        // Implementar si se necesita
     }
 
     public void setVelocityFilterWeight(float weight) {
-        // No utilizado
-    }
-
-    public void setBackgroundColor(int color) {
-        invalidate();
+        // Implementar si se necesita
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        // Solicitar que el padre no intercepte eventos táctiles
-        getParent().requestDisallowInterceptTouchEvent(true);
-
-        // Para mejor rendimiento en pantallas de alta densidad
-        float density = getResources().getDisplayMetrics().density;
-        event.setLocation(event.getX() * density, event.getY() * density);
-
-        return super.dispatchTouchEvent(event);
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+        invalidate();
     }
 }
