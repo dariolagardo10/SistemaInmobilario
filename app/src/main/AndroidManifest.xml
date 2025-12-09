@@ -2,23 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="es.rcti.demoprinterplus.sistemainmobilario">
 
-    <!-- Permisos de Internet -->
+    <!-- 🌐 Permisos de Internet y Red -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- 📷 Cámara (opcional, para fotos) -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
-    <!-- Permisos de Bluetooth -->
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <!-- 🔵 Bluetooth -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
-    <!-- Permisos de Almacenamiento -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <!-- 💾 Almacenamiento -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
     <application
@@ -30,8 +39,9 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.SistemaInmobilario">
 
+        <!-- 🟢 LOGIN: Pantalla principal (launcher) -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +49,12 @@
             </intent-filter>
         </activity>
 
+        <!-- 🟠 MAIN: Se abre solo desde el Login -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- 🔒 Otras pantallas internas -->
         <activity
             android:name=".ParcelDetailActivity"
             android:exported="false" />
@@ -47,6 +63,7 @@
             android:name=".ActaInfraccionActivity"
             android:exported="false" />
 
+        <!-- 📁 FileProvider (para compartir imágenes) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="es.rcti.demoprinterplus.sistemainmobilario.fileprovider"
@@ -56,5 +73,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
     </application>
 </manifest>

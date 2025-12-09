@@ -3,28 +3,32 @@ package es.rcti.demoprinterplus.sistemainmobilario;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import java.util.Date;
 import java.util.List;
 
 public class ActaInfraccionData {
+
     private String id;
     private Bitmap firmaInfractor;
     private List<Uri> imagenesPrueba;
+
     private String numeroActa;
     private String propietario;
     private String domicilio;
     private String lugarInfraccion;
     private String fecha;
     private String hora;
+
     private String seccion;
     private String chacra;
     private String manzana;
     private String parcela;
     private String lote;
     private String partida;
+
     private String infractorNombre;
     private String infractorDomicilio;
     private String infractorDni;
+
     private boolean cartelObra;
     private boolean dispositivosSeguridad;
     private boolean numeroPermiso;
@@ -33,10 +37,36 @@ public class ActaInfraccionData {
     private boolean planosAprobados;
     private boolean directorObra;
     private boolean varios;
+
+    private String tipoActa;  // INFRACCION / INSPECCION
+    private String resultadoInspeccion;  // NUEVO
+
     private String observaciones;
     private String boletaInspeccion;
+
     private int logoResourceId;
     private String inspectorId;
+
+
+    // =============================
+    //   GETTERS & SETTERS
+    // =============================
+
+    public String getResultadoInspeccion() {
+        return resultadoInspeccion;
+    }
+
+    public void setResultadoInspeccion(String resultadoInspeccion) {
+        this.resultadoInspeccion = resultadoInspeccion;
+    }
+
+    public String getTipoActa() {
+        return tipoActa;
+    }
+
+    public void setTipoActa(String tipoActa) {
+        this.tipoActa = tipoActa;
+    }
 
     public String getId() {
         return id;
@@ -44,6 +74,22 @@ public class ActaInfraccionData {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Bitmap getFirmaInfractor() {
+        return firmaInfractor;
+    }
+
+    public void setFirmaInfractor(Bitmap firmaInfractor) {
+        this.firmaInfractor = firmaInfractor;
+    }
+
+    public List<Uri> getImagenesPrueba() {
+        return imagenesPrueba;
+    }
+
+    public void setImagenesPrueba(List<Uri> imagenesPrueba) {
+        this.imagenesPrueba = imagenesPrueba;
     }
 
     public String getNumeroActa() {
@@ -192,22 +238,6 @@ public class ActaInfraccionData {
 
     public boolean isMaterialesVereda() {
         return materialesVereda;
-    }
-
-    public Bitmap getFirmaInfractor() {
-        return firmaInfractor;
-    }
-
-    public void setFirmaInfractor(Bitmap firmaInfractor) {
-        this.firmaInfractor = firmaInfractor;
-    }
-
-    public List<Uri> getImagenesPrueba() {
-        return imagenesPrueba;
-    }
-
-    public void setImagenesPrueba(List<Uri> imagenesPrueba) {
-        this.imagenesPrueba = imagenesPrueba;
     }
 
     public void setMaterialesVereda(boolean materialesVereda) {

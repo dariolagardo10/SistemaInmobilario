@@ -10,8 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/simplify-js/1.2.4/simplify.min.js"></script>
     <script src="simplify.min.js"></script>
     <style>
-    body { margin: 0; padding: 0; }
-    #map { height: 100vh; width: 100vw; }
+    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
+    #map { height: 100vh; width: 100vw; background-color: transparent; }
     .loading, .info-panel, .search-container, .progress-bar { position: absolute; z-index: 1000; font-family: Arial, sans-serif; }
     .loading {
       top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -39,15 +39,32 @@
     .info-panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .info-panel td { padding: 4px; border-bottom: 1px solid #ddd; }
     .close-btn { position: absolute; top: 5px; right: 5px; background: #f44336; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+    .back-btn {
+      position: absolute; top: 10px; left: 10px; z-index: 1000;
+      background: #4CAF50; color: white; border: none; border-radius: 4px;
+      padding: 8px 12px; cursor: pointer; display: none;
+    }
+
+    /* Estilos para eliminar los bordes del mapa */
+    .leaflet-container {
+      background: transparent !important;
+    }
+    .leaflet-control-zoom {
+      margin: 10px !important;
+    }
+    .leaflet-control-attribution {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
-<div class="search-container">
+<div class="search-container" id="searchContainer">
     <select id="sectionSelect"></select>
     <input type="text" id="searchInput" placeholder="Buscar FINCA, LOTE o PART">
     <button onclick="loadGeoJson()">Cargar</button>
 </div>
 
+<button id="backButton" class="back-btn" onclick="resetView()">Volver a búsqueda</button>
 <div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
 <div id="loading" class="loading" style="display: none;">Cargando datos...</div>
 <div id="map"></div>
@@ -57,11 +74,40 @@
 </div>
 
 <script>
-    let map = L.map('map').setView([-27.3675, -55.8966], 13);
-    let geoJsonLayer, selectedLayer;
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    // Opciones del mapa sin padding ni márgenes
+    let map = L.map('map', {
+        attributionControl: false,
+        zoomSnap: 0.1,         // Permitir zoom más fino
+        zoomDelta: 0.5,        // Controles de zoom más precisos
+        maxBoundsViscosity: 1, // Evita que se pueda desplazar fuera de los límites
+        bounceAtZoomLimits: false,
+        zoomControl: true
+    }).setView([-27.3675, -55.8966], 13);
+
+    let geoJsonLayer, selectedLayer, allFeatures;
+    let mapMode = 'search'; // 'search' o 'parcels'
+
+    // Mapa completo para el modo de búsqueda
+    const baseTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        opacity: 1
+    });
+
+    // Capa de solo etiquetas para mostrar nombres de calles encima de las parcelas
+    const labelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20,
+        opacity: 0.9
+    });
+
+    // Mapa base para el modo de búsqueda
+    baseTileLayer.addTo(map);
 
     const sectionSelect = document.getElementById('sectionSelect');
+    const searchContainer = document.getElementById('searchContainer');
+    const backButton = document.getElementById('backButton');
+
     for (let i = 1; i <= 27; i++) {
       if (i === 4) continue;
       let val = i.toString().padStart(3, '0');
@@ -83,7 +129,35 @@
 
     function closeInfoPanel() {
       document.getElementById('infoPanel').style.display = 'none';
-      if (selectedLayer) geoJsonLayer.resetStyle(selectedLayer);
+      if (selectedLayer) {
+        // Revertir estilo al estilo normal de parcela (azul)
+        if (mapMode === 'parcels') {
+          selectedLayer.setStyle({ weight: 2, color: '#3388ff', fillOpacity: 0.7, fillColor: '#3388ff' });
+        }
+      }
+    }
+
+    function resetView() {
+      // Volver a la vista de búsqueda
+      if (geoJsonLayer) map.removeLayer(geoJsonLayer);
+      searchContainer.style.display = 'flex';
+      backButton.style.display = 'none';
+      document.getElementById('infoPanel').style.display = 'none';
+
+      // Quitar capa de etiquetas si está activa
+      if (map.hasLayer(labelsLayer)) {
+        map.removeLayer(labelsLayer);
+      }
+
+      // Restaurar el mapa base completo
+      if (!map.hasLayer(baseTileLayer)) {
+        baseTileLayer.addTo(map);
+      }
+
+      mapMode = 'search';
+
+      // Resetear vista
+      map.setView([-27.3675, -55.8966], 13);
     }
 
     function loadGeoJson() {
@@ -113,6 +187,8 @@
     }
 
     function handleGeoJson(data, searchText) {
+      allFeatures = data.features;
+
       const features = data.features.filter(f => {
         const props = f.properties || {};
         return !searchText ||
@@ -133,23 +209,113 @@
         return;
       }
 
-      const style = { weight: 1, opacity: 0.7, color: '#3388ff', fillOpacity: 0.2 };
+      // Siempre mostrar solo las parcelas
+      showOnlyParcels(features);
+
+      document.getElementById('loading').style.display = document.getElementById('progressBar').style.display = 'none';
+    }
+
+    // Función para calcular el nivel de zoom óptimo maximizando el uso de la pantalla
+    function getOptimalZoom(bounds) {
+      // Obtener las dimensiones actuales del contenedor del mapa
+      const mapWidth = map.getSize().x;
+      const mapHeight = map.getSize().y;
+
+      // Calcular la relación de aspecto del mapa y de las parcelas
+      const mapAspect = mapWidth / mapHeight;
+
+      // Obtener el centro y las esquinas del área a mostrar
+      const boundsNE = bounds.getNorthEast();
+      const boundsSW = bounds.getSouthWest();
+
+      // Calcular el ancho y alto del área en grados
+      const latDiff = boundsNE.lat - boundsSW.lat;
+      const lngDiff = boundsNE.lng - boundsSW.lng;
+
+      // Calcular relación de aspecto de las parcelas
+      const boundsAspect = lngDiff / latDiff;
+
+      // Calcular el zoom necesario para llenar la pantalla
+      let zoom;
+
+      // Si el mapa es más ancho que alto
+      if (mapAspect > boundsAspect) {
+        // Limitado por altura
+        zoom = Math.log(360 / latDiff) / Math.log(2);
+      } else {
+        // Limitado por anchura
+        zoom = Math.log(360 / lngDiff) / Math.log(2);
+      }
+
+      // Aplicar un pequeño ajuste adicional para asegurar que llena toda la pantalla
+      return zoom * 1.05;
+    }
+
+    function showOnlyParcels(features) {
+      // Cambiar a modo parcelas
+      mapMode = 'parcels';
+
+      // Remover el mapa base completo pero mantener las etiquetas
+      if (map.hasLayer(baseTileLayer)) {
+        map.removeLayer(baseTileLayer);
+      }
+
+      // Añadir capa de solo etiquetas para mostrar nombres de calles
+      if (!map.hasLayer(labelsLayer)) {
+        labelsLayer.addTo(map);
+      }
+
+      // Ocultar barra de búsqueda y mostrar botón de regreso
+      searchContainer.style.display = 'none';
+      backButton.style.display = 'block';
+
+      // Estilo para las parcelas (azul intenso como en tu imagen)
+      const style = {
+          weight: 2,
+          opacity: 1,
+          color: '#3388ff',
+          fillOpacity: 0.7,
+          fillColor: '#3388ff'
+      };
+
+      if (geoJsonLayer) map.removeLayer(geoJsonLayer);
+
       geoJsonLayer = L.geoJSON({ type: "FeatureCollection", features }, {
         style,
         onEachFeature: (feature, layer) => {
           layer.on({
             click: function(e) {
-              if (selectedLayer) geoJsonLayer.resetStyle(selectedLayer);
+              if (selectedLayer) {
+                selectedLayer.setStyle(style); // Restablecer el estilo anterior
+              }
               selectedLayer = layer;
-              layer.setStyle({ weight: 3, color: '#ff0000', fillOpacity: 0.5 });
+              layer.setStyle({ weight: 3, color: '#ff0000', fillOpacity: 0.7, fillColor: '#ff9999' });
               showParcelInfo(feature.properties);
               L.DomEvent.stopPropagation(e);
             }
           });
         }
       }).addTo(map);
-      map.fitBounds(geoJsonLayer.getBounds());
-      document.getElementById('loading').style.display = document.getElementById('progressBar').style.display = 'none';
+
+      // Obtener los límites de todas las parcelas
+      const bounds = geoJsonLayer.getBounds();
+
+      // Aplicar el límite mínimo de zoom (se muestra más cercano)
+      const optimalZoom = getOptimalZoom(bounds);
+
+      // Centrar y hacer zoom a las parcelas sin padding para maximizar pantalla
+      const center = bounds.getCenter();
+      map.setView(center, optimalZoom);
+
+      // Establecer límites para evitar desplazamiento fuera de las parcelas
+      map.setMaxBounds(bounds.pad(0.2));
+
+      // Si solo hay una parcela, mostrar su información automáticamente
+      if (features.length === 1) {
+        selectedLayer = geoJsonLayer.getLayers()[0];
+        selectedLayer.setStyle({ weight: 3, color: '#ff0000', fillOpacity: 0.7, fillColor: '#ff9999' });
+        showParcelInfo(features[0].properties);
+      }
     }
 
     function showParcelInfo(props) {
@@ -159,7 +325,7 @@
         if (props[k]) html += `<tr><td><strong>${k}</strong></td><td>${props[k]}</td></tr>`;
       }
       html += '</table>';
-      html += '<button onclick="sendToApp()" style="margin-top: 10px; padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Enviar a App</button>';
+      html += '<button onclick="sendToApp()" style="margin-top: 10px; padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Enviar </button>';
       document.getElementById('parcelInfo').innerHTML = html;
       document.getElementById('infoPanel').style.display = 'block';
       window.currentParcelProperties = props;
@@ -177,7 +343,22 @@
     document.getElementById('searchInput').addEventListener('keyup', e => {
       if (e.key === 'Enter') loadGeoJson();
     });
-    map.on('click', closeInfoPanel);
+    map.on('click', function(e) {
+      // Solo cerrar el panel de información si está abierto
+      if (document.getElementById('infoPanel').style.display === 'block') {
+        closeInfoPanel();
+      }
+    });
+
+    // Ajustar el tamaño cuando cambie la orientación o tamaño de pantalla
+    window.addEventListener('resize', function() {
+      if (geoJsonLayer && mapMode === 'parcels') {
+        const bounds = geoJsonLayer.getBounds();
+        const optimalZoom = getOptimalZoom(bounds);
+        const center = bounds.getCenter();
+        map.setView(center, optimalZoom);
+      }
+    });
   </script>
 </body>
 </html>

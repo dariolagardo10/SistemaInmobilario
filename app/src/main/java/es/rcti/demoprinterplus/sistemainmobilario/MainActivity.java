@@ -8,7 +8,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,17 +15,32 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import es.rcti.demoprinterplus.sistemainmobilario.R;
-
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private static final String TAG = "MainActivity";
 
+    // 🔹 Variables globales para mantener los datos del inspector
+    private String nombreInspector;
+    private String apellidoInspector;
+    private String legajoInspector;
+    private String inspectorId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // ✅ Recuperar datos del login
+        Intent loginIntent = getIntent();
+        nombreInspector = loginIntent.getStringExtra("NOMBRE_INSPECTOR");
+        apellidoInspector = loginIntent.getStringExtra("APELLIDO_INSPECTOR");
+        legajoInspector = loginIntent.getStringExtra("LEGAJO_INSPECTOR");
+        inspectorId = loginIntent.getStringExtra("INSPECTOR_ID");
+
+        Log.d(TAG, "✅ Datos del inspector cargados en MainActivity: " +
+                nombreInspector + " " + apellidoInspector + " | Legajo: " + legajoInspector +
+                " | ID: " + inspectorId);
 
         webView = findViewById(R.id.webView);
         setupWebView();
@@ -76,6 +90,13 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 Intent intent = new Intent(MainActivity.this, ParcelDetailActivity.class);
                 intent.putExtra("PARCEL_DATA", parcelData);
+
+                // ✅ Pasar también los datos del inspector al detalle de la parcela
+                intent.putExtra("NOMBRE_INSPECTOR", nombreInspector);
+                intent.putExtra("APELLIDO_INSPECTOR", apellidoInspector);
+                intent.putExtra("LEGAJO_INSPECTOR", legajoInspector);
+                intent.putExtra("INSPECTOR_ID", inspectorId);
+
                 startActivity(intent);
             });
         }

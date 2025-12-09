@@ -12,8 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import es.rcti.demoprinterplus.sistemainmobilario.R;
-
 public class ParcelDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "ParcelDetailActivity";
@@ -27,8 +25,19 @@ public class ParcelDetailActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.parcelDataTextView);
         Button btnGenerateActa = findViewById(R.id.btnGenerateActa);
 
-        // Obtener datos de parcela
+        // ✅ Recuperar datos de la parcela
         String parcelData = getIntent().getStringExtra("PARCEL_DATA");
+
+        // ✅ Recuperar datos del inspector desde el Intent
+        String nombreInspector = getIntent().getStringExtra("NOMBRE_INSPECTOR");
+        String apellidoInspector = getIntent().getStringExtra("APELLIDO_INSPECTOR");
+        String legajoInspector = getIntent().getStringExtra("LEGAJO_INSPECTOR");
+        String inspectorId = getIntent().getStringExtra("INSPECTOR_ID");
+
+        Log.d(TAG, "✅ Datos del inspector recibidos en ParcelDetailActivity: "
+                + nombreInspector + " " + apellidoInspector
+                + " | Legajo: " + legajoInspector
+                + " | ID: " + inspectorId);
 
         if (parcelData == null || parcelData.isEmpty()) {
             textView.setText("No se recibieron datos de parcela");
@@ -54,10 +63,18 @@ public class ParcelDetailActivity extends AppCompatActivity {
 
             textView.setText(info.toString());
 
-            // Configurar botón para generar acta
+            // ✅ Configurar botón para generar acta
             btnGenerateActa.setOnClickListener(v -> {
                 Intent intent = new Intent(ParcelDetailActivity.this, ActaInfraccionActivity.class);
                 intent.putExtra("PARCEL_DATA", parcelData);
+
+                // 🔹 Enviar también los datos del inspector al Acta
+                intent.putExtra("NOMBRE_INSPECTOR", nombreInspector);
+                intent.putExtra("APELLIDO_INSPECTOR", apellidoInspector);
+                intent.putExtra("LEGAJO_INSPECTOR", legajoInspector);
+                intent.putExtra("INSPECTOR_ID", inspectorId);
+
+                Log.d(TAG, "📤 Enviando datos del inspector al Acta: " + legajoInspector);
                 startActivity(intent);
             });
 
