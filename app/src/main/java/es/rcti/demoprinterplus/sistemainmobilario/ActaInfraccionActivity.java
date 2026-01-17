@@ -413,26 +413,26 @@ public class ActaInfraccionActivity extends AppCompatActivity {
     private void mostrarDialogoCausasInspeccion() {
         // Lista de RESULTADOS para inspección (ajustá los textos como quieras)
         final String[] items = new String[]{
-                "Construcción sin permiso (2.2.6 C.E.P.)",
+                "Construccion sin permiso (2.2.6 C.E.P.)",
                 "Cartel de obra (2.2.12 C.E.P.)",
-                "Documentación técnica en obra (2.1.8.7 C.E.P.)",
+                "Documentacion tecnica en obra (2.1.8.7 C.E.P.)",
                 "Modificaciones y ampliaciones (2.1.8.8 C.E.P.)",
                 "Clausura de obra (2.3.3.4 C.E.P.)",
-                "Paralización de la obra (2.3.5 C.E.P.)",
-                "Dirección de Obra (2.4.1 C.E.P.)",
-                "Materiales y obstáculos en la vía pública (3.1.2 - 4.2.3 C.E.P.)",
+                "Paralizacion de la obra (2.3.5 C.E.P.)",
+                "Direccion de Obra (2.4.1 C.E.P.)",
+                "Materiales y obstaculos en la vía publica (3.1.2 - 4.2.3 C.E.P.)",
                 "Acceso para discapacitados (3.10.4 C.E.P.)",
                 "Permiso de vallado (4.1.1.1 C.E.P.)",
                 "Canaletas de desagüe (4.12.2 C.E.P.)",
-                "Medidas de protección y seguridad (4.14 C.E.P.)",
-                "Protección a la vía pública (4.14.2 C.E.P.)",
-                "Instalaciones eléctricas (3.1.11.2 C.E.P.)",
+                "Medidas de proteccion y seguridad (4.14 C.E.P.)",
+                "Proteccion a la via publica (4.14.2 C.E.P.)",
+                "Instalaciones electricas (3.1.11.2 C.E.P.)",
                 "Ascensores y montacargas (3.4.8.4 C.E.P.)",
                 "Servicio de salubridad (2.5.2 C.E.P.)",
                 "Instalaciones que produzcan molestias (3.7.4 C.E.P.)",
                 "Planos contra incendio (3.9.1.5 C.E.P.)",
                 "Servicios sanitarios para discapacitados (3.10.7 C.E.P.)",
-                "Seguridad instalaciones eléctricas (5.5.1.1 C.E.P.)",
+                "Seguridad instalaciones electricas (5.5.1.1 C.E.P.)",
                 "VARIOS"
         };
 
@@ -1388,6 +1388,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
         printerConnector.connect();
     }
+
     private void printActa() {
         ActaInfraccionData acta = ultimaActaImpresa != null ? ultimaActaImpresa : generateActaData();
 
@@ -1439,20 +1440,20 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                         // Encabezado institucional
                         printLine("MUNICIPALIDAD DE POSADAS", "", lineWidth);
-                        printLine("Secretaría de Movilidad Urbana", "", lineWidth);
-                        printLine("Dirección de Obras Particulares", "", lineWidth);
+                        printLine("Secretaria de Movilidad Urbana", "", lineWidth);
+                        printLine("Direccion de Obras Privadas", "", lineWidth);
                         printLine("--------------------------------", "", lineWidth);
 
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
                         // 🔹 Encabezado del acta según tipo
-                        String tituloActa = esInspeccion ? "ACTA DE INSPECCION N°: " : "ACTA DE INFRACCION N°: ";
+                        String tituloActa = esInspeccion ? "ACTA DE INSPECCION NUMERO: " : "ACTA DE INFRACCION NUMERO: ";
                         printLine(tituloActa, acta.getNumeroActa(), lineWidth);
                         printLine("Fecha: ", acta.getFecha(), lineWidth);
                         printLine("Hora: ", acta.getHora(), lineWidth);
 
                         if (acta.getTipoActa() != null && !acta.getTipoActa().isEmpty()) {
-                            printLine("Tipo de actuación: ", acta.getTipoActa(), lineWidth);
+                            printLine("Tipo de actuacion: ", acta.getTipoActa(), lineWidth);
                         }
 
                         printLine("--------------------------------", "", lineWidth);
@@ -1462,11 +1463,11 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                         printLine("PROPIETARIO", "", lineWidth);
                         printLine("Nombre: ", acta.getPropietario(), lineWidth);
                         printLine("Domicilio: ", acta.getDomicilio(), lineWidth);
-                        printLine("Ubicación: ", acta.getLugarInfraccion(), lineWidth);
+                        printLine("Ubicacion: ", acta.getLugarInfraccion(), lineWidth);
 
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);
                         printLine("DATOS DEL INMUEBLE", "", lineWidth);
-                        printLine("Sección: ", acta.getSeccion(), lineWidth);
+                        printLine("Seccion: ", acta.getSeccion(), lineWidth);
                         printLine("Chacra: ", acta.getChacra(), lineWidth);
                         printLine("Manzana: ", acta.getManzana(), lineWidth);
                         printLine("Parcela: ", acta.getParcela(), lineWidth);
@@ -1497,7 +1498,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                             outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
                             if (!acta.getBoletaInspeccion().isEmpty()) {
-                                printLine("Boleta de Inspección N°: ", acta.getBoletaInspeccion(), lineWidth);
+                                printLine("Boleta de Inspeccion Numero: ", acta.getBoletaInspeccion(), lineWidth);
                             }
 
                         } else {
@@ -1508,7 +1509,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                             if (acta.isCartelObra())            printLine("- ", "Cartel de Obra Reglamentario", lineWidth);
                             if (acta.isDispositivosSeguridad()) printLine("- ", "Dispositivos de Seguridad", lineWidth);
-                            if (acta.isNumeroPermiso())         printLine("- ", "N° Permiso", lineWidth);
+                            if (acta.isNumeroPermiso())         printLine("- ", "Numero Permiso", lineWidth);
                             if (acta.isMaterialesVereda())      printLine("- ", "Materiales en Vereda", lineWidth);
                             if (acta.isCercoObra())             printLine("- ", "Cerco de Obra", lineWidth);
                             if (acta.isPlanosAprobados())       printLine("- ", "Planos Aprobados", lineWidth);
@@ -1519,7 +1520,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                             if (!acta.getBoletaInspeccion().isEmpty()) {
                                 // 👇 Lo que me pediste: boleta cambia de texto según tipo
-                                printLine("Boleta de Infracción N°: ", acta.getBoletaInspeccion(), lineWidth);
+                                printLine("Boleta de Infraccion Numero: ", acta.getBoletaInspeccion(), lineWidth);
                             }
                         }
 
@@ -1534,9 +1535,9 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                         // 🔹 Leyendas finales distintas
                         if (esInspeccion) {
-                            printLine("", "El propietario deberá adecuar la obra a las normas del C.E.P. y demás disposiciones vigentes.", lineWidth);
+                            printLine("", "El propietario debera adecuar la obra a las normas del C.E.P. y demas disposiciones vigentes.", lineWidth);
                         } else {
-                            printLine("", "El infractor deberá comparecer ante el Tribunal de Faltas Municipal en los plazos establecidos.", lineWidth);
+                            printLine("", "El infractor debera comparecer ante el Tribunal de Faltas Municipal en los plazos establecidos.", lineWidth);
                         }
 
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);

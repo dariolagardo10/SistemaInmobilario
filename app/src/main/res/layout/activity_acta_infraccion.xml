@@ -41,7 +41,7 @@
                 android:id="@+id/tvHeaderReparticion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dirección de Obras Particulares"
+                android:text="Dirección de Obras Privadas"
                 android:textColor="#E9FFFA"
                 android:textSize="13sp"
                 android:layout_marginTop="2dp" />
