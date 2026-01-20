@@ -129,6 +129,8 @@ public class ApiClient {
 
                 // 👉 Enviamos el tipo de acta al backend
                 params.put("tipo_acta", tipoActaSinTildes);
+                params.put("incumplimiento", acta.isIncumplimiento() ? "1" : "0");
+                params.put("clausura_preventiva", acta.isClausuraPreventiva() ? "1" : "0");
 
                 // 👉 Enviamos resultado de inspección (puede venir vacío si es infracción)
                 String resultadoInspeccion = acta.getResultadoInspeccion();

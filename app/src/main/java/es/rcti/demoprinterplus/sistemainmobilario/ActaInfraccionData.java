@@ -29,6 +29,9 @@ public class ActaInfraccionData {
     private String infractorDomicilio;
     private String infractorDni;
 
+    // =============================
+    //   CAUSAS / FALTAS (INFRACCION)
+    // =============================
     private boolean cartelObra;
     private boolean dispositivosSeguridad;
     private boolean numeroPermiso;
@@ -38,8 +41,15 @@ public class ActaInfraccionData {
     private boolean directorObra;
     private boolean varios;
 
-    private String tipoActa;  // INFRACCION / INSPECCION
-    private String resultadoInspeccion;  // NUEVO
+    // ✅ NUEVOS
+    private boolean incumplimiento;
+    private boolean clausuraPreventiva;
+
+    // =============================
+    //   INSPECCION
+    // =============================
+    private String tipoActa;            // INFRACCION / INSPECCION
+    private String resultadoInspeccion; // Resultado inspección
 
     private String observaciones;
     private String boletaInspeccion;
@@ -47,264 +57,110 @@ public class ActaInfraccionData {
     private int logoResourceId;
     private String inspectorId;
 
-
     // =============================
     //   GETTERS & SETTERS
     // =============================
 
-    public String getResultadoInspeccion() {
-        return resultadoInspeccion;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setResultadoInspeccion(String resultadoInspeccion) {
-        this.resultadoInspeccion = resultadoInspeccion;
-    }
+    public Bitmap getFirmaInfractor() { return firmaInfractor; }
+    public void setFirmaInfractor(Bitmap firmaInfractor) { this.firmaInfractor = firmaInfractor; }
 
-    public String getTipoActa() {
-        return tipoActa;
-    }
+    public List<Uri> getImagenesPrueba() { return imagenesPrueba; }
+    public void setImagenesPrueba(List<Uri> imagenesPrueba) { this.imagenesPrueba = imagenesPrueba; }
 
-    public void setTipoActa(String tipoActa) {
-        this.tipoActa = tipoActa;
-    }
+    public String getNumeroActa() { return numeroActa; }
+    public void setNumeroActa(String numeroActa) { this.numeroActa = numeroActa; }
 
-    public String getId() {
-        return id;
-    }
+    public String getPropietario() { return propietario; }
+    public void setPropietario(String propietario) { this.propietario = propietario; }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    public String getDomicilio() { return domicilio; }
+    public void setDomicilio(String domicilio) { this.domicilio = domicilio; }
 
-    public Bitmap getFirmaInfractor() {
-        return firmaInfractor;
-    }
+    public String getLugarInfraccion() { return lugarInfraccion; }
+    public void setLugarInfraccion(String lugarInfraccion) { this.lugarInfraccion = lugarInfraccion; }
 
-    public void setFirmaInfractor(Bitmap firmaInfractor) {
-        this.firmaInfractor = firmaInfractor;
-    }
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
 
-    public List<Uri> getImagenesPrueba() {
-        return imagenesPrueba;
-    }
+    public String getHora() { return hora; }
+    public void setHora(String hora) { this.hora = hora; }
 
-    public void setImagenesPrueba(List<Uri> imagenesPrueba) {
-        this.imagenesPrueba = imagenesPrueba;
-    }
+    public String getSeccion() { return seccion; }
+    public void setSeccion(String seccion) { this.seccion = seccion; }
 
-    public String getNumeroActa() {
-        return numeroActa;
-    }
+    public String getChacra() { return chacra; }
+    public void setChacra(String chacra) { this.chacra = chacra; }
 
-    public void setNumeroActa(String numeroActa) {
-        this.numeroActa = numeroActa;
-    }
+    public String getManzana() { return manzana; }
+    public void setManzana(String manzana) { this.manzana = manzana; }
 
-    public String getPropietario() {
-        return propietario;
-    }
+    public String getParcela() { return parcela; }
+    public void setParcela(String parcela) { this.parcela = parcela; }
 
-    public void setPropietario(String propietario) {
-        this.propietario = propietario;
-    }
+    public String getLote() { return lote; }
+    public void setLote(String lote) { this.lote = lote; }
 
-    public String getDomicilio() {
-        return domicilio;
-    }
+    public String getPartida() { return partida; }
+    public void setPartida(String partida) { this.partida = partida; }
 
-    public void setDomicilio(String domicilio) {
-        this.domicilio = domicilio;
-    }
+    public String getInfractorNombre() { return infractorNombre; }
+    public void setInfractorNombre(String infractorNombre) { this.infractorNombre = infractorNombre; }
 
-    public String getLugarInfraccion() {
-        return lugarInfraccion;
-    }
+    public String getInfractorDomicilio() { return infractorDomicilio; }
+    public void setInfractorDomicilio(String infractorDomicilio) { this.infractorDomicilio = infractorDomicilio; }
 
-    public void setLugarInfraccion(String lugarInfraccion) {
-        this.lugarInfraccion = lugarInfraccion;
-    }
+    public String getInfractorDni() { return infractorDni; }
+    public void setInfractorDni(String infractorDni) { this.infractorDni = infractorDni; }
 
-    public String getFecha() {
-        return fecha;
-    }
+    public boolean isCartelObra() { return cartelObra; }
+    public void setCartelObra(boolean cartelObra) { this.cartelObra = cartelObra; }
 
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
-    }
+    public boolean isDispositivosSeguridad() { return dispositivosSeguridad; }
+    public void setDispositivosSeguridad(boolean dispositivosSeguridad) { this.dispositivosSeguridad = dispositivosSeguridad; }
 
-    public String getHora() {
-        return hora;
-    }
+    public boolean isNumeroPermiso() { return numeroPermiso; }
+    public void setNumeroPermiso(boolean numeroPermiso) { this.numeroPermiso = numeroPermiso; }
 
-    public void setHora(String hora) {
-        this.hora = hora;
-    }
+    public boolean isMaterialesVereda() { return materialesVereda; }
+    public void setMaterialesVereda(boolean materialesVereda) { this.materialesVereda = materialesVereda; }
 
-    public String getSeccion() {
-        return seccion;
-    }
+    public boolean isCercoObra() { return cercoObra; }
+    public void setCercoObra(boolean cercoObra) { this.cercoObra = cercoObra; }
 
-    public void setSeccion(String seccion) {
-        this.seccion = seccion;
-    }
+    public boolean isPlanosAprobados() { return planosAprobados; }
+    public void setPlanosAprobados(boolean planosAprobados) { this.planosAprobados = planosAprobados; }
 
-    public String getChacra() {
-        return chacra;
-    }
+    public boolean isDirectorObra() { return directorObra; }
+    public void setDirectorObra(boolean directorObra) { this.directorObra = directorObra; }
 
-    public void setChacra(String chacra) {
-        this.chacra = chacra;
-    }
+    public boolean isVarios() { return varios; }
+    public void setVarios(boolean varios) { this.varios = varios; }
 
-    public String getManzana() {
-        return manzana;
-    }
+    // ✅ NUEVOS
+    public boolean isIncumplimiento() { return incumplimiento; }
+    public void setIncumplimiento(boolean incumplimiento) { this.incumplimiento = incumplimiento; }
 
-    public void setManzana(String manzana) {
-        this.manzana = manzana;
-    }
+    public boolean isClausuraPreventiva() { return clausuraPreventiva; }
+    public void setClausuraPreventiva(boolean clausuraPreventiva) { this.clausuraPreventiva = clausuraPreventiva; }
 
-    public String getParcela() {
-        return parcela;
-    }
+    public String getTipoActa() { return tipoActa; }
+    public void setTipoActa(String tipoActa) { this.tipoActa = tipoActa; }
 
-    public void setParcela(String parcela) {
-        this.parcela = parcela;
-    }
+    public String getResultadoInspeccion() { return resultadoInspeccion; }
+    public void setResultadoInspeccion(String resultadoInspeccion) { this.resultadoInspeccion = resultadoInspeccion; }
 
-    public String getLote() {
-        return lote;
-    }
+    public String getObservaciones() { return observaciones; }
+    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
 
-    public void setLote(String lote) {
-        this.lote = lote;
-    }
+    public String getBoletaInspeccion() { return boletaInspeccion; }
+    public void setBoletaInspeccion(String boletaInspeccion) { this.boletaInspeccion = boletaInspeccion; }
 
-    public String getPartida() {
-        return partida;
-    }
+    public int getLogoResourceId() { return logoResourceId; }
+    public void setLogoResourceId(int logoResourceId) { this.logoResourceId = logoResourceId; }
 
-    public void setPartida(String partida) {
-        this.partida = partida;
-    }
-
-    public String getInfractorNombre() {
-        return infractorNombre;
-    }
-
-    public void setInfractorNombre(String infractorNombre) {
-        this.infractorNombre = infractorNombre;
-    }
-
-    public String getInfractorDomicilio() {
-        return infractorDomicilio;
-    }
-
-    public void setInfractorDomicilio(String infractorDomicilio) {
-        this.infractorDomicilio = infractorDomicilio;
-    }
-
-    public String getInfractorDni() {
-        return infractorDni;
-    }
-
-    public void setInfractorDni(String infractorDni) {
-        this.infractorDni = infractorDni;
-    }
-
-    public boolean isCartelObra() {
-        return cartelObra;
-    }
-
-    public void setCartelObra(boolean cartelObra) {
-        this.cartelObra = cartelObra;
-    }
-
-    public boolean isDispositivosSeguridad() {
-        return dispositivosSeguridad;
-    }
-
-    public void setDispositivosSeguridad(boolean dispositivosSeguridad) {
-        this.dispositivosSeguridad = dispositivosSeguridad;
-    }
-
-    public boolean isNumeroPermiso() {
-        return numeroPermiso;
-    }
-
-    public void setNumeroPermiso(boolean numeroPermiso) {
-        this.numeroPermiso = numeroPermiso;
-    }
-
-    public boolean isMaterialesVereda() {
-        return materialesVereda;
-    }
-
-    public void setMaterialesVereda(boolean materialesVereda) {
-        this.materialesVereda = materialesVereda;
-    }
-
-    public boolean isCercoObra() {
-        return cercoObra;
-    }
-
-    public void setCercoObra(boolean cercoObra) {
-        this.cercoObra = cercoObra;
-    }
-
-    public boolean isPlanosAprobados() {
-        return planosAprobados;
-    }
-
-    public void setPlanosAprobados(boolean planosAprobados) {
-        this.planosAprobados = planosAprobados;
-    }
-
-    public boolean isDirectorObra() {
-        return directorObra;
-    }
-
-    public void setDirectorObra(boolean directorObra) {
-        this.directorObra = directorObra;
-    }
-
-    public boolean isVarios() {
-        return varios;
-    }
-
-    public void setVarios(boolean varios) {
-        this.varios = varios;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public String getBoletaInspeccion() {
-        return boletaInspeccion;
-    }
-
-    public void setBoletaInspeccion(String boletaInspeccion) {
-        this.boletaInspeccion = boletaInspeccion;
-    }
-
-    public int getLogoResourceId() {
-        return logoResourceId;
-    }
-
-    public void setLogoResourceId(int logoResourceId) {
-        this.logoResourceId = logoResourceId;
-    }
-
-    public String getInspectorId() {
-        return inspectorId;
-    }
-
-    public void setInspectorId(String inspectorId) {
-        this.inspectorId = inspectorId;
-    }
+    public String getInspectorId() { return inspectorId; }
+    public void setInspectorId(String inspectorId) { this.inspectorId = inspectorId; }
 }

@@ -340,6 +340,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Varios" />
+
+                <!-- ✅ NUEVOS CHECKBOX "BACKEND" PARA CAUSAS/FALTAS -->
+                <CheckBox
+                    android:id="@+id/cbIncumplimiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Incumplimiento" />
+
+                <CheckBox
+                    android:id="@+id/cbClausuraPreventiva"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Clausura preventiva" />
+
             </LinearLayout>
 
             <!-- RESULTADO (INSPECCIÓN) -->
@@ -510,6 +524,8 @@
                 android:textColor="#FFFFFF"
                 android:textAllCaps="false"
                 android:textSize="15sp" />
+
+
 
         </LinearLayout>
 

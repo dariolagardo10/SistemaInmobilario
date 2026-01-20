@@ -1,5 +1,8 @@
 package es.rcti.demoprinterplus.sistemainmobilario;
 
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import retrofit2.Call;
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -94,12 +97,15 @@ import retrofit2.Response;
 
 public class ActaInfraccionActivity extends AppCompatActivity {
 
-
-
+    private String nombreInspector;
+    private String apellidoInspector;
+    private String legajoInspector;
+    private String inspectorId;
+    private CheckBox cbIncumplimiento, cbClausuraPreventiva;
     private Button btnSeleccionarCausasInspeccion;      // 👈 NUEVO
     private TextView tvCausasSeleccionadasInspeccion;   // 👈 NUEVO
 
-
+    private LinearLayout layoutCausasCheckBoxes;
     private Button btnSeleccionarCausas;      // 👈 nuevo
     private TextView tvCausasSeleccionadas;
     private Button btnExpandSignature, btnClearSignature;
@@ -176,6 +182,9 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             }
     );
 
+    // ===============================
+// ✅ onCreate() MODIFICADO
+// ===============================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,6 +193,20 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         parcelaData = getIntent().getStringExtra("PARCEL_DATA");
         printerConnector = new BluetoothPrinterConnector(this);
         apiClient = new ApiClient(this);
+
+        // ✅ RECIBIR DATOS DEL INSPECTOR (VIENEN DESDE ParcelDetailActivity)
+        String nombreInspector  = getIntent().getStringExtra("NOMBRE_INSPECTOR");
+        String apellidoInspector = getIntent().getStringExtra("APELLIDO_INSPECTOR");
+        String legajoInspector  = getIntent().getStringExtra("LEGAJO_INSPECTOR");
+        String inspectorId      = getIntent().getStringExtra("INSPECTOR_ID");
+
+        // ✅ LOG (para verificar)
+        Log.d(TAG, "✅ Inspector recibido en ActaInfraccionActivity: " +
+                (nombreInspector != null ? nombreInspector : "") + " " +
+                (apellidoInspector != null ? apellidoInspector : "") +
+                " | Legajo: " + (legajoInspector != null ? legajoInspector : "null") +
+                " | ID: " + (inspectorId != null ? inspectorId : "null")
+        );
 
         initViews();
         fillInitialData();
@@ -194,30 +217,41 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
     private void initViews() {
 
+        // ✅ Layout oculto (backend de checkboxes)
+        layoutCausasCheckBoxes = findViewById(R.id.layoutCausasCheckBoxes);
 
-        etPropietario = findViewById(R.id.etPropietario);
-        etDomicilio = findViewById(R.id.etDomicilio);
-        etLugarInfraccion = findViewById(R.id.etLugarInfraccion);
-        etSeccion = findViewById(R.id.etSeccion);
-        etChacra = findViewById(R.id.etChacra);
-        etManzana = findViewById(R.id.etManzana);
-        etParcela = findViewById(R.id.etParcela);
-        etLote = findViewById(R.id.etLote);
-        etPartida = findViewById(R.id.etPartida);
-        etObservaciones = findViewById(R.id.etObservaciones);
+        // ✅ Campos de texto
+        etPropietario      = findViewById(R.id.etPropietario);
+        etDomicilio        = findViewById(R.id.etDomicilio);
+        etLugarInfraccion  = findViewById(R.id.etLugarInfraccion);
+        etSeccion          = findViewById(R.id.etSeccion);
+        etChacra           = findViewById(R.id.etChacra);
+        etManzana          = findViewById(R.id.etManzana);
+        etParcela          = findViewById(R.id.etParcela);
+        etLote             = findViewById(R.id.etLote);
+        etPartida          = findViewById(R.id.etPartida);
+        etObservaciones    = findViewById(R.id.etObservaciones);
+
         etBoletaInspeccion = findViewById(R.id.etBoletaInspeccion);
-        etBoletaInspeccion.setEnabled(false);
-        cbCartelObra = findViewById(R.id.cbCartelObra);
-        cbDispositivosSeguridad = findViewById(R.id.cbDispositivosSeguridad);
-        cbNumeroPermiso = findViewById(R.id.cbNumeroPermiso);
-        cbMaterialesVereda = findViewById(R.id.cbMaterialesVereda);
-        cbCercoObra = findViewById(R.id.cbCercoObra);
-        cbPlanosAprobados = findViewById(R.id.cbPlanosAprobados);
-        cbDirectorObra = findViewById(R.id.cbDirectorObra);
-        cbVarios = findViewById(R.id.cbVarios);
-        btnSeleccionarCausas = findViewById(R.id.btnSeleccionarCausas);
-        tvCausasSeleccionadas = findViewById(R.id.tvCausasSeleccionadas);
+        if (etBoletaInspeccion != null) {
+            etBoletaInspeccion.setEnabled(false);
+        }
 
+        // ✅ Checkboxes (backend)
+        cbCartelObra            = findViewById(R.id.cbCartelObra);
+        cbDispositivosSeguridad = findViewById(R.id.cbDispositivosSeguridad);
+        cbNumeroPermiso         = findViewById(R.id.cbNumeroPermiso);
+        cbMaterialesVereda      = findViewById(R.id.cbMaterialesVereda);
+        cbCercoObra             = findViewById(R.id.cbCercoObra);
+        cbPlanosAprobados       = findViewById(R.id.cbPlanosAprobados);
+        cbDirectorObra          = findViewById(R.id.cbDirectorObra);
+        cbVarios                = findViewById(R.id.cbVarios);
+
+        // ✅ NUEVOS (backend)
+        cbIncumplimiento        = findViewById(R.id.cbIncumplimiento);
+        cbClausuraPreventiva    = findViewById(R.id.cbClausuraPreventiva);
+
+        // ✅ Botones + textos resumen
         btnSeleccionarCausas = findViewById(R.id.btnSeleccionarCausas);
         tvCausasSeleccionadas = findViewById(R.id.tvCausasSeleccionadas);
 
@@ -226,28 +260,22 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
         btnGuardarImprimir = findViewById(R.id.btnGuardarImprimir);
 
-        // Firma e imágenes
+        // ✅ Firma e imágenes
         signatureView = findViewById(R.id.signatureView);
-        btnAddImages = findViewById(R.id.btnAddImages);
-        btnFirma = findViewById(R.id.btnFirma);
-        rvImages = findViewById(R.id.rvImages);
+        btnAddImages  = findViewById(R.id.btnAddImages);
+        btnFirma      = findViewById(R.id.btnFirma);
+        rvImages      = findViewById(R.id.rvImages);
 
-        // 👉 Referenciamos los otros dos botones
+        // 👉 Botones extra firma (ocultos)
         btnExpandSignature = findViewById(R.id.btnExpandSignature);
         btnClearSignature  = findViewById(R.id.btnClearSignature);
 
-        // 👉 Y los ocultamos
-        if (btnExpandSignature != null) {
-            btnExpandSignature.setVisibility(View.GONE);
-        }
-        if (btnClearSignature != null) {
-            btnClearSignature.setVisibility(View.GONE);
-        }
+        if (btnExpandSignature != null) btnExpandSignature.setVisibility(View.GONE);
+        if (btnClearSignature != null)  btnClearSignature.setVisibility(View.GONE);
 
-        // SignatureView oculto: se usa solo como buffer interno
+        // ✅ SignatureView oculto: se usa solo como buffer interno
         if (signatureView != null) {
             signatureView.setVisibility(View.GONE);
-
             signatureView.setStrokeWidth(2.5f);
             signatureView.setMinWidth(1.0f);
             signatureView.setMaxWidth(4.0f);
@@ -256,20 +284,27 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             signatureView.setBackgroundColor(Color.WHITE);
         }
 
-        // Configurar RecyclerView de imágenes
-        rvImages.setLayoutManager(new LinearLayoutManager(
-                this,
-                LinearLayoutManager.HORIZONTAL,
-                false
-        ));
+        // ✅ IMPORTANTE: mantener oculto el layout backend
+        if (layoutCausasCheckBoxes != null) {
+            layoutCausasCheckBoxes.setVisibility(View.GONE);
+        }
 
-        imageAdapter = new ImageAdapter(this, imageList, position -> {
-            imageList.remove(position);
-            imageAdapter.notifyItemRemoved(position);
-        });
-        rvImages.setAdapter(imageAdapter);
+        // ✅ RecyclerView imágenes
+        if (rvImages != null) {
+            rvImages.setLayoutManager(new LinearLayoutManager(
+                    this,
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+            ));
 
-        // Inicializar servicio Retrofit
+            imageAdapter = new ImageAdapter(this, imageList, position -> {
+                imageList.remove(position);
+                imageAdapter.notifyItemRemoved(position);
+            });
+            rvImages.setAdapter(imageAdapter);
+        }
+
+        // ✅ Retrofit
         apiService = RetrofitClient.getClient().create(OracleApiService.class);
     }
 
@@ -296,6 +331,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             }
         }
     }
+
     private void setupListeners() {
         // Guardar + Imprimir
         btnGuardarImprimir.setOnClickListener(v -> {
@@ -349,67 +385,65 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         }
     }
 
-
     private void mostrarDialogoCausas() {
-            // Textos a mostrar en el diálogo (sin strings.xml)
-            final String[] items = new String[]{
-                    "Cartel de Obra Reglamentario (punto 2.2.12 C.E.P.)",
-                    "Dispositivos de Seguridad (punto 4.14 y anexos C.E.P.)",
-                    "Nº Permiso (punto 2.2.6 y anexos C.E.P.)",
-                    "Materiales en Vereda (punto 3.5.2.4 C.E.P.)",
-                    "Cerco de Obra (punto 4.1 y anexos C.E.P.)",
-                    "Planos Aprobados (punto 2.1.8.7 C.E.P.)",
-                    "Director de Obra (punto 2.4.1 C.E.P.)",
-                    "Varios"
-            };
+        final String[] items = new String[]{
+                "Cartel de Obra Reglamentario (punto 2.2.12 C.E.P.)",
+                "Dispositivos de Seguridad (punto 4.14 y anexos C.E.P.)",
+                "Nº Permiso (punto 2.2.6 y anexos C.E.P.)",
+                "Materiales en Vereda (punto 3.5.2.4 C.E.P.)",
+                "Cerco de Obra (punto 4.1 y anexos C.E.P.)",
+                "Planos Aprobados (punto 2.1.8.7 C.E.P.)",
+                "Director de Obra (punto 2.4.1 C.E.P.)",
+                "Varios",
+                "Incumplimiento",
+                "Clausura preventiva"
+        };
 
-            // Estado inicial según los CheckBox ocultos
-            final boolean[] checked = new boolean[]{
-                    cbCartelObra.isChecked(),
-                    cbDispositivosSeguridad.isChecked(),
-                    cbNumeroPermiso.isChecked(),
-                    cbMaterialesVereda.isChecked(),
-                    cbCercoObra.isChecked(),
-                    cbPlanosAprobados.isChecked(),
-                    cbDirectorObra.isChecked(),
-                    cbVarios.isChecked()
-            };
+        final boolean[] checked = new boolean[]{
+                cbCartelObra.isChecked(),
+                cbDispositivosSeguridad.isChecked(),
+                cbNumeroPermiso.isChecked(),
+                cbMaterialesVereda.isChecked(),
+                cbCercoObra.isChecked(),
+                cbPlanosAprobados.isChecked(),
+                cbDirectorObra.isChecked(),
+                cbVarios.isChecked(),
+                cbIncumplimiento.isChecked(),
+                cbClausuraPreventiva.isChecked()
+        };
 
-            new AlertDialog.Builder(this)
-                    .setTitle("Seleccione causas / faltas")
-                    .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> {
-                        checked[which] = isChecked;
-                    })
-                    .setPositiveButton("Aceptar", (dialog, which) -> {
-                        // Actualizar los CheckBox ocultos para que el backend siga funcionando igual
-                        cbCartelObra.setChecked(checked[0]);
-                        cbDispositivosSeguridad.setChecked(checked[1]);
-                        cbNumeroPermiso.setChecked(checked[2]);
-                        cbMaterialesVereda.setChecked(checked[3]);
-                        cbCercoObra.setChecked(checked[4]);
-                        cbPlanosAprobados.setChecked(checked[5]);
-                        cbDirectorObra.setChecked(checked[6]);
-                        cbVarios.setChecked(checked[7]);
+        new AlertDialog.Builder(this)
+                .setTitle("Seleccione causas / faltas")
+                .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> checked[which] = isChecked)
+                .setPositiveButton("Aceptar", (dialog, which) -> {
 
-                        // Actualizar el resumen de selección
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < items.length; i++) {
-                            if (checked[i]) {
-                                if (sb.length() > 0) sb.append(" / ");
-                                sb.append(items[i]);
-                            }
+                    cbCartelObra.setChecked(checked[0]);
+                    cbDispositivosSeguridad.setChecked(checked[1]);
+                    cbNumeroPermiso.setChecked(checked[2]);
+                    cbMaterialesVereda.setChecked(checked[3]);
+                    cbCercoObra.setChecked(checked[4]);
+                    cbPlanosAprobados.setChecked(checked[5]);
+                    cbDirectorObra.setChecked(checked[6]);
+                    cbVarios.setChecked(checked[7]);
+                    cbIncumplimiento.setChecked(checked[8]);
+                    cbClausuraPreventiva.setChecked(checked[9]);
+
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < items.length; i++) {
+                        if (checked[i]) {
+                            if (sb.length() > 0) sb.append(" / ");
+                            sb.append(items[i]);
                         }
+                    }
 
-                        if (sb.length() == 0) {
-                            tvCausasSeleccionadas.setText("Ninguna causa seleccionada");
-                        } else {
-                            tvCausasSeleccionadas.setText(sb.toString());
-                        }
+                    tvCausasSeleccionadas.setText(sb.length() == 0
+                            ? "Ninguna causa seleccionada"
+                            : sb.toString());
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
 
-                    })
-                    .setNegativeButton("Cancelar", null)
-                    .show();
-        }
     private void mostrarDialogoCausasInspeccion() {
         // Lista de RESULTADOS para inspección (ajustá los textos como quieras)
         final String[] items = new String[]{
@@ -434,6 +468,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                 "Servicios sanitarios para discapacitados (3.10.7 C.E.P.)",
                 "Seguridad instalaciones electricas (5.5.1.1 C.E.P.)",
                 "VARIOS"
+
         };
 
         // Guardamos selección en memoria local (no hay checkboxes ocultos acá)
@@ -498,6 +533,8 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         cbPlanosAprobados.setChecked(false);
         cbDirectorObra.setChecked(false);
         cbVarios.setChecked(false);
+        cbIncumplimiento.setChecked(false);
+        cbClausuraPreventiva.setChecked(false);
 
         // Tipo de actuación: por defecto "Infracción"
 
@@ -652,6 +689,9 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         return image;
     }
 
+
+
+
     private boolean validateForm() {
         // 1) Campos básicos obligatorios
         if (etPropietario.getText().toString().trim().isEmpty() ||
@@ -669,7 +709,10 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                         cbCercoObra.isChecked() ||
                         cbPlanosAprobados.isChecked() ||
                         cbDirectorObra.isChecked() ||
-                        cbVarios.isChecked();
+                        cbVarios.isChecked() ||
+                        // ✅ NUEVOS
+                        cbIncumplimiento.isChecked() ||
+                        cbClausuraPreventiva.isChecked();
 
         // 3) ¿Hay algún resultado de INSPECCIÓN seleccionado? (texto del resumen)
         boolean hayCausaInspeccion = false;
@@ -700,51 +743,52 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         return true;
     }
 
-
     private void guardarYImprimir() {
         if (!validateForm()) return;
 
-        // Verificar conectividad
+        actaYaGuardada = false;
+
+        final ActaInfraccionData acta = generateActaData();
+        acta.setImagenesPrueba(imageList);
+        ultimaActaImpresa = acta;
+
+        // Inspector ID
+        SharedPreferences preferences = getSharedPreferences("ActasInfraccionApp", MODE_PRIVATE);
+        String inspectorId = preferences.getString("inspector_id", "1");
+        acta.setInspectorId(inspectorId);
+
+        // ✅ SI NO HAY INTERNET => OFFLINE + IMPRIMIR
         if (!isNetworkAvailable()) {
-            showToast("No hay conexión a internet. No se puede guardar el acta.");
+            // Guardar OFFLINE (Room/SQLite local)
+            guardarOffline(acta);
+
+            // Imprimir igual (si querés imprimir sin internet)
+            actaYaGuardada = true; // ya quedó guardada localmente
+            showToast("Acta guardada OFFLINE. Imprimiendo...");
+            runOnUiThread(this::checkBluetoothPermission);
             return;
         }
 
-        actaYaGuardada = false;
-        final ActaInfraccionData acta = generateActaData();
-// Firma ya viene en el acta desde generateActaData()
-        acta.setImagenesPrueba(imageList);
-
-        ultimaActaImpresa = acta;
-
-        // Obtener ID del inspector (o usar valor provisional)
-        SharedPreferences preferences = getSharedPreferences("ActasInfraccionApp", MODE_PRIVATE);
-        String inspectorId = preferences.getString("inspector_id", "1"); // Valor provisional: 1
-        acta.setInspectorId(inspectorId);
-
+        // ✅ SI HAY INTERNET => FLUJO NORMAL ONLINE
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Guardando acta...");
-        progressDialog.setCancelable(true); // Permitir cancelar si el usuario lo desea
+        progressDialog.setCancelable(true);
         progressDialog.show();
 
-        // Añadir timeout al ProgressDialog
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    try {
-                        progressDialog.dismiss();
-                        showToast("La operación ha excedido el tiempo límite. Intente nuevamente.");
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error al cerrar el diálogo: " + e.getMessage());
-                    }
+        // Timeout de seguridad
+        new Handler().postDelayed(() -> {
+            if (progressDialog.isShowing()) {
+                try {
+                    progressDialog.dismiss();
+                    showToast("La operación ha excedido el tiempo límite. Intente nuevamente.");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error al cerrar el diálogo: " + e.getMessage());
                 }
             }
-        }, 30000); // 30 segundos de timeout
+        }, 30000);
 
-        // Registramos el tiempo de inicio para diagnóstico
         final long startTime = System.currentTimeMillis();
-        Log.d(TAG, "Iniciando guardar acta: " + startTime);
+        Log.d(TAG, "Iniciando guardar acta (ONLINE): " + startTime);
 
         apiClient.insertarActaInfraccion(acta, new ApiClient.ApiCallback() {
             @Override
@@ -755,25 +799,27 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                     if (response.has("success") && response.getBoolean("success")) {
                         int actaId = response.optInt("acta_id", 0);
+
                         if (actaId > 0) {
-                            // Guardar la firma
+                            // ✅ Subir firma -> luego sube imágenes -> luego imprime
                             subirFirma(String.valueOf(actaId), acta.getFirmaInfractor(), progressDialog, true);
                         } else {
-                            progressDialog.dismiss();
+                            // Caso raro: success true pero sin id
+                            if (progressDialog.isShowing()) progressDialog.dismiss();
                             actaYaGuardada = true;
                             showToast("Acta guardada. Imprimiendo...");
-                            runOnUiThread(() -> {
-                                checkBluetoothPermission();
-                            });
+                            runOnUiThread(() -> checkBluetoothPermission());
                         }
+
                     } else {
-                        progressDialog.dismiss();
+                        if (progressDialog.isShowing()) progressDialog.dismiss();
                         String error = response.optString("error", "Error desconocido");
                         showToast("Error al guardar: " + error);
                         Log.e(TAG, "Error al guardar acta: " + error);
                     }
+
                 } catch (JSONException e) {
-                    progressDialog.dismiss();
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
                     showToast("Error al procesar la respuesta del servidor");
                     Log.e(TAG, "Error JSON: " + e.getMessage(), e);
                 }
@@ -782,11 +828,17 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             @Override
             public void onError(String error) {
                 long endTime = System.currentTimeMillis();
-                Log.e(TAG, "Error en " + (endTime - startTime) + "ms: " + error);
+                Log.e(TAG, "Error ONLINE en " + (endTime - startTime) + "ms: " + error);
 
-                progressDialog.dismiss();
-                showToast("Error en la comunicación con el servidor: " + error);
-                Log.e(TAG, "Error en la API: " + error);
+                // ✅ Si falla la comunicación, guardamos offline para no perder el acta
+                if (progressDialog.isShowing()) progressDialog.dismiss();
+
+                showToast("No se pudo guardar online. Se guarda OFFLINE y se sincroniza luego.");
+                guardarOffline(acta);
+
+                // Imprimir igual
+                actaYaGuardada = true;
+                runOnUiThread(() -> checkBluetoothPermission());
             }
         });
     }
@@ -890,6 +942,153 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             }
         });
     }
+    private void guardarOffline(ActaInfraccionData acta) {
+        new Thread(() -> {
+            String localId = java.util.UUID.randomUUID().toString();
+
+            AppDb db = AppDb.get(getApplicationContext());
+
+            ActaEntity e = new ActaEntity();
+            // ===== guardar checks (INFRACCION) =====
+            e.cartelObra = acta.isCartelObra() ? 1 : 0;
+            e.dispositivosSeguridad = acta.isDispositivosSeguridad() ? 1 : 0;
+            e.numeroPermiso = acta.isNumeroPermiso() ? 1 : 0;
+            e.materialesVereda = acta.isMaterialesVereda() ? 1 : 0;
+            e.cercoObra = acta.isCercoObra() ? 1 : 0;
+            e.planosAprobados = acta.isPlanosAprobados() ? 1 : 0;
+            e.directorObra = acta.isDirectorObra() ? 1 : 0;
+            e.varios = acta.isVarios() ? 1 : 0;
+
+            e.incumplimiento = acta.isIncumplimiento() ? 1 : 0;
+            e.clausuraPreventiva = acta.isClausuraPreventiva() ? 1 : 0;
+
+// ===== inspección =====
+            e.resultadoInspeccion = n(acta.getResultadoInspeccion());
+
+            e.localId = localId;
+
+            // Tipo/Acción
+            String tipo = acta.getTipoActa() != null ? acta.getTipoActa().trim().toUpperCase() : "INFRACCION";
+            e.tipoActa = tipo;
+            e.accion = tipo.equals("INSPECCION") ? "insertarActaInspeccion" : "insertarActaInfraccion";
+
+            // Datos acta
+            e.numero = n(acta.getNumeroActa());
+            e.fecha  = n(acta.getFecha());
+            e.hora   = n(acta.getHora());
+            e.propietario = n(acta.getPropietario());
+
+            // Inspector
+            e.tfInspectorId = n(acta.getInspectorId());
+
+            // Infractor
+            e.infractorDni = n(acta.getInfractorDni());
+            e.infractorNombre = n(acta.getInfractorNombre());
+            e.infractorDomicilio = n(acta.getInfractorDomicilio());
+
+            // Ubicación / Catastro
+            e.lugarInfraccion = n(acta.getLugarInfraccion());
+            e.seccion = n(acta.getSeccion());
+            e.chacra = n(acta.getChacra());
+            e.manzana = n(acta.getManzana());
+            e.parcela = n(acta.getParcela());
+            e.lote = n(acta.getLote());
+            e.partida = n(acta.getPartida());
+
+            e.boletaInspeccion = n(acta.getBoletaInspeccion());
+            e.observaciones = n(acta.getObservaciones());
+
+            // INFRACCION / INSPECCION
+            if ("INSPECCION".equals(tipo)) {
+                e.resultadoInspeccion = n(acta.getResultadoInspeccion());
+                e.infraccionDesc = "";
+            } else {
+                // Acá guardamos el "detalle" de faltas como texto.
+                // Si vos ya armás un texto final en algún lado, ponelo acá.
+                // Si no, lo generamos desde los booleanos.
+                e.infraccionDesc = generarTextoFaltas(acta);
+                e.resultadoInspeccion = "";
+            }
+
+            // Estado sync
+            e.serverId = 0;
+            e.synced = 0;
+            e.createdAt = System.currentTimeMillis();
+
+            // Guardar acta
+            db.actaDao().upsert(e);
+
+            // Guardar firma (Bitmap -> PNG bytes)
+            Bitmap firma = acta.getFirmaInfractor();
+            if (firma != null) {
+                byte[] firmaBytes = bitmapToPngBytes(firma);
+                if (firmaBytes != null && firmaBytes.length > 0) {
+                    FirmaEntity f = new FirmaEntity();
+                    f.localId = localId;
+                    f.firmaBytes = firmaBytes;
+                    db.firmaDao().upsert(f);
+                }
+            }
+
+            // Guardar imágenes (List<Uri>)
+            List<Uri> imgs = acta.getImagenesPrueba();
+            if (imgs != null) {
+                for (Uri uri : imgs) {
+                    if (uri == null) continue;
+                    ImagenEntity img = new ImagenEntity();
+                    img.localId = localId;
+                    img.uriString = uri.toString();
+                    db.imagenDao().insert(img);
+                }
+            }
+
+            // Encolar sincronización automática
+            SyncScheduler.enqueue(getApplicationContext());
+
+            runOnUiThread(() -> showToast("Acta guardada OFFLINE. Se sincroniza automáticamente al volver internet."));
+        }).start();
+    }
+
+    private String n(String s) { return (s == null) ? "" : s.trim(); }
+
+    private byte[] bitmapToPngBytes(Bitmap bmp) {
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            return baos.toByteArray();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    private String generarTextoFaltas(ActaInfraccionData a) {
+        java.util.ArrayList<String> items = new java.util.ArrayList<>();
+
+        if (a.isCartelObra()) items.add("Cartel de Obra Reglamentario");
+        if (a.isDispositivosSeguridad()) items.add("Dispositivos de Seguridad");
+        if (a.isNumeroPermiso()) items.add("N° Permiso");
+        if (a.isMaterialesVereda()) items.add("Materiales en Vereda");
+        if (a.isCercoObra()) items.add("Cerco de Obra");
+        if (a.isPlanosAprobados()) items.add("Planos Aprobados");
+        if (a.isDirectorObra()) items.add("Director de Obra");
+        if (a.isVarios()) items.add("Varios");
+
+        // Nuevos (si querés incluirlos en el texto)
+        if (a.isIncumplimiento()) items.add("Incumplimiento");
+        if (a.isClausuraPreventiva()) items.add("Clausura Preventiva");
+
+        if (items.isEmpty()) return "ACTA SIN DETALLE DEFINIDO";
+        return android.text.TextUtils.join(" - ", items);
+    }
+
+
+    private String safeText(android.widget.TextView tv) {
+        if (tv == null) return "";
+        CharSequence cs = tv.getText();
+        return cs == null ? "" : cs.toString().trim();
+    }
+
 
     // Método subirFirma mejorado para evitar bloqueos
     private void subirFirma(String actaId, Bitmap firma, ProgressDialog progressDialog, boolean imprimirLuego) {
@@ -1389,8 +1588,12 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         printerConnector.connect();
     }
 
+
+    // ===============================
+// ✅ printActa() COMPLETO (FIX lambda final/effectively final)
+// ===============================
     private void printActa() {
-        ActaInfraccionData acta = ultimaActaImpresa != null ? ultimaActaImpresa : generateActaData();
+        final ActaInfraccionData acta = (ultimaActaImpresa != null) ? ultimaActaImpresa : generateActaData();
 
         new Thread(() -> {
             try {
@@ -1399,26 +1602,48 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                     return;
                 }
 
-                int lineWidth = 32;
+                final int lineWidth = 32;
 
                 // 🔹 Determinar tipo de actuación
-                String tipoActaStr = acta.getTipoActa() != null ? acta.getTipoActa().trim().toUpperCase() : "INFRACCION";
+                String tipoActaStr = (acta.getTipoActa() != null) ? acta.getTipoActa().trim().toUpperCase() : "INFRACCION";
                 final boolean esInspeccion = "INSPECCION".equals(tipoActaStr);
+
+                // ============================
+                // ✅ 0) DATOS INSPECTOR (PARA IMPRIMIR)
+                // ============================
+                final String nombreInspector   = getIntent().getStringExtra("NOMBRE_INSPECTOR");
+                final String apellidoInspector = getIntent().getStringExtra("APELLIDO_INSPECTOR");
+                String legajoInspectorTmp      = getIntent().getStringExtra("LEGAJO_INSPECTOR");
+
+
+                // Normalizar legajo (SIN usarlo directo en lambda)
+                if (legajoInspectorTmp == null || legajoInspectorTmp.trim().isEmpty()) {
+                    legajoInspectorTmp = "0";
+                    Log.e("Firma", "⚠️ Legajo inspector no recibido, usando 0");
+                } else {
+                    legajoInspectorTmp = legajoInspectorTmp.trim();
+                }
+
+                // ✅ FINAL para usar en lambda
+                final String legajoInspectorFinal = legajoInspectorTmp;
+
+                // Nombre completo inspector
+                String inspectorNombreTmp = "";
+                if (nombreInspector != null) inspectorNombreTmp += nombreInspector.trim();
+                if (apellidoInspector != null && !apellidoInspector.trim().isEmpty()) {
+                    inspectorNombreTmp += (inspectorNombreTmp.isEmpty() ? "" : " ") + apellidoInspector.trim();
+                }
+                if (inspectorNombreTmp.trim().isEmpty()) inspectorNombreTmp = "No informado";
+
+                final String inspectorNombreFinal = inspectorNombreTmp;
+                final String idMostrarFinal = (inspectorId != null && !inspectorId.trim().isEmpty()) ? inspectorId.trim() : "No informado";
+
+                Log.d("Firma", "🆔 Descargando firma para legajo: " + legajoInspectorFinal);
 
                 // ============================
                 // 1️⃣ Descargar firma primero
                 // ============================
-                String legajoInspector = getIntent().getStringExtra("LEGAJO_INSPECTOR");
-                if (legajoInspector == null || legajoInspector.isEmpty()) {
-                    legajoInspector = "0";
-                    Log.e("Firma", "⚠️ Legajo inspector no recibido, usando 0");
-                }
-
-                Log.d("Firma", "🆔 Descargando firma para legajo: " + legajoInspector);
-
-                precargarFirma(legajoInspector, () -> {
-                    // ⚠️ Este código se ejecuta RECIÉN cuando la firma está lista (o se intentó)
-
+                precargarFirma(legajoInspectorFinal, () -> {
                     try {
                         // ============================
                         // 2️⃣ Comenzar IMPRESIÓN
@@ -1440,14 +1665,17 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                         // Encabezado institucional
                         printLine("MUNICIPALIDAD DE POSADAS", "", lineWidth);
-                        printLine("Secretaria de Movilidad Urbana", "", lineWidth);
+                        printLine("Secretaria de Planificacion Estrategica y Territorial", "", lineWidth);
                         printLine("Direccion de Obras Privadas", "", lineWidth);
                         printLine("--------------------------------", "", lineWidth);
 
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
-                        // 🔹 Encabezado del acta según tipo
-                        String tituloActa = esInspeccion ? "ACTA DE INSPECCION NUMERO: " : "ACTA DE INFRACCION NUMERO: ";
+                        // Encabezado del acta según tipo
+                        String tituloActa = esInspeccion
+                                ? "ACTA DE INSPECCION NUMERO: "
+                                : "ACTA DE INFRACCION NUMERO: ";
+
                         printLine(tituloActa, acta.getNumeroActa(), lineWidth);
                         printLine("Fecha: ", acta.getFecha(), lineWidth);
                         printLine("Hora: ", acta.getHora(), lineWidth);
@@ -1459,7 +1687,9 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                         printLine("--------------------------------", "", lineWidth);
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
-                        // 🔹 Datos del propietario / inmueble
+
+
+                        // Datos del propietario / inmueble
                         printLine("PROPIETARIO", "", lineWidth);
                         printLine("Nombre: ", acta.getPropietario(), lineWidth);
                         printLine("Domicilio: ", acta.getDomicilio(), lineWidth);
@@ -1477,19 +1707,16 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
-                        // 🔹 Bloque central según tipo de actuación
+                        // Bloque central según tipo
                         if (esInspeccion) {
-                            // ==============
-                            //   INSPECCIÓN
-                            // ==============
+                            // INSPECCIÓN
                             printLine("RESULTADO DE INSPECCION", "", lineWidth);
 
-                            String resultado = acta.getResultadoInspeccion() != null
+                            String resultado = (acta.getResultadoInspeccion() != null)
                                     ? acta.getResultadoInspeccion().trim()
                                     : "";
 
                             if (!resultado.isEmpty()) {
-                                // Se ajusta solo a varias líneas mediante printLine
                                 printLine("", resultado, lineWidth);
                             } else {
                                 printLine("", "Sin detalle de resultado declarado.", lineWidth);
@@ -1497,35 +1724,34 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                             outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
-                            if (!acta.getBoletaInspeccion().isEmpty()) {
+                            if (acta.getBoletaInspeccion() != null && !acta.getBoletaInspeccion().isEmpty()) {
                                 printLine("Boleta de Inspeccion Numero: ", acta.getBoletaInspeccion(), lineWidth);
                             }
 
                         } else {
-                            // ==============
-                            //   INFRACCIÓN
-                            // ==============
+                            // INFRACCIÓN
                             printLine("CAUSAS / FALTAS", "", lineWidth);
 
-                            if (acta.isCartelObra())            printLine("- ", "Cartel de Obra Reglamentario", lineWidth);
-                            if (acta.isDispositivosSeguridad()) printLine("- ", "Dispositivos de Seguridad", lineWidth);
-                            if (acta.isNumeroPermiso())         printLine("- ", "Numero Permiso", lineWidth);
-                            if (acta.isMaterialesVereda())      printLine("- ", "Materiales en Vereda", lineWidth);
-                            if (acta.isCercoObra())             printLine("- ", "Cerco de Obra", lineWidth);
-                            if (acta.isPlanosAprobados())       printLine("- ", "Planos Aprobados", lineWidth);
-                            if (acta.isDirectorObra())          printLine("- ", "Director de Obra", lineWidth);
-                            if (acta.isVarios())                printLine("- ", "Varios", lineWidth);
+                            if (acta.isCartelObra())             printLine("- ", "Cartel de Obra Reglamentario", lineWidth);
+                            if (acta.isDispositivosSeguridad())  printLine("- ", "Dispositivos de Seguridad", lineWidth);
+                            if (acta.isNumeroPermiso())          printLine("- ", "Numero Permiso", lineWidth);
+                            if (acta.isMaterialesVereda())       printLine("- ", "Materiales en Vereda", lineWidth);
+                            if (acta.isCercoObra())              printLine("- ", "Cerco de Obra", lineWidth);
+                            if (acta.isPlanosAprobados())        printLine("- ", "Planos Aprobados", lineWidth);
+                            if (acta.isDirectorObra())           printLine("- ", "Director de Obra", lineWidth);
+                            if (acta.isVarios())                 printLine("- ", "Varios", lineWidth);
+                            if (acta.isIncumplimiento())        printLine("- ", "Incumplimiento", lineWidth);
+                            if (acta.isClausuraPreventiva())    printLine("- ", "Clausura preventiva", lineWidth);
 
                             outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
-                            if (!acta.getBoletaInspeccion().isEmpty()) {
-                                // 👇 Lo que me pediste: boleta cambia de texto según tipo
+                            if (acta.getBoletaInspeccion() != null && !acta.getBoletaInspeccion().isEmpty()) {
                                 printLine("Boleta de Infraccion Numero: ", acta.getBoletaInspeccion(), lineWidth);
                             }
                         }
 
-                        // 🔹 Observaciones (para ambos tipos)
-                        if (!acta.getObservaciones().isEmpty()) {
+                        // Observaciones
+                        if (acta.getObservaciones() != null && !acta.getObservaciones().isEmpty()) {
                             outputStream.write(PrinterHelper.Commands.FEED_LINE);
                             printLine("Observaciones:", "", lineWidth);
                             printLine("", acta.getObservaciones(), lineWidth);
@@ -1533,7 +1759,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                         outputStream.write(PrinterHelper.Commands.FEED_LINE);
 
-                        // 🔹 Leyendas finales distintas
+                        // Leyenda final
                         if (esInspeccion) {
                             printLine("", "El propietario debera adecuar la obra a las normas del C.E.P. y demas disposiciones vigentes.", lineWidth);
                         } else {
@@ -1557,13 +1783,18 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
                         printLine("_______________________", "", lineWidth);
                         printLine("Firma del Inspector", "", lineWidth);
-
+                        // ============================
+                        // ✅ BLOQUE INSPECTOR (NUEVO)
+                        // ============================
+                        printLine("INSPECTOR", "", lineWidth);
+                        printLine("Nombre: ", inspectorNombreFinal, lineWidth);
+                        printLine("Legajo: ", legajoInspectorFinal, lineWidth);
+                        printLine("--------------------------------", "", lineWidth);
+                        outputStream.write(PrinterHelper.Commands.FEED_LINE);
                         outputStream.write(new byte[]{0x0A, 0x0A, 0x0A});
                         outputStream.write(PrinterHelper.Commands.FEED_PAPER_AND_CUT);
 
-                        // ============================
-                        // 4️⃣ Mostrar diálogo final
-                        // ============================
+                        // Diálogo final
                         runOnUiThread(() -> {
                             new AlertDialog.Builder(ActaInfraccionActivity.this)
                                     .setTitle("Acta impresa")
@@ -1582,10 +1813,11 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                 });
 
             } catch (Exception e) {
-                Log.e(TAG, "Error general printActa: " + e.getMessage());
+                Log.e(TAG, "Error general printActa: " + e.getMessage(), e);
             }
         }).start();
     }
+
 
 
 
@@ -1658,8 +1890,10 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                         cbCercoObra.isChecked() ||
                         cbPlanosAprobados.isChecked() ||
                         cbDirectorObra.isChecked() ||
-                        cbVarios.isChecked();
-
+                        cbVarios.isChecked() ||
+                        // ✅ NUEVOS
+                        cbIncumplimiento.isChecked() ||
+                        cbClausuraPreventiva.isChecked();
         // ¿Hay resultado de INSPECCIÓN? (texto del resumen)
         boolean hayCausaInspeccion = false;
         String detalleInspeccion = "";
@@ -1696,7 +1930,8 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         acta.setPlanosAprobados(cbPlanosAprobados.isChecked());
         acta.setDirectorObra(cbDirectorObra.isChecked());
         acta.setVarios(cbVarios.isChecked());
-
+        acta.setIncumplimiento(cbIncumplimiento.isChecked());
+        acta.setClausuraPreventiva(cbClausuraPreventiva.isChecked());
         acta.setObservaciones(etObservaciones.getText().toString());
         acta.setBoletaInspeccion(etBoletaInspeccion.getText().toString());
         acta.setLogoResourceId(LOGO_RESOURCE_ID);
