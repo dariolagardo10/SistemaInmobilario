@@ -10,6 +10,6 @@ public class ImagenEntity {
     public int id;
 
     @NonNull public String localId;   // UUID del acta
-    public String uriString;          // content://... o file://...
+    public String uriString;          // file://... (ideal) o content://...
+    public int synced = 0;            // 0 pendiente, 1 OK
 }
-

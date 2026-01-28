@@ -11,7 +11,7 @@ import java.util.List;
 public class ApiSync {
 
     private static final String TAG = "ApiSync";
-    static final String BASE_URL = "http://31.97.172.185/sistema_inmo/api_inmo.php";
+    static final String BASE_URL = "http://31.97.172.185/api_inmo.php";
 
     // ==============================
     // SUBIR ACTA (SYNC)

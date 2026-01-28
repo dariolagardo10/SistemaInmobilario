@@ -40,155 +40,148 @@
             android:src="@android:drawable/ic_menu_call"
             app:tint="#FFFFFF"
             android:layout_marginEnd="6dp" />
-
-        <TextView
-            android:id="@+id/tvHeaderTelefono"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0800-888-Ciudad (24 hs)"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- 🔹 Contenedor principal -->
-    <LinearLayout
+    <!-- 🔹 Contenedor principal con scroll -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:padding="16dp">
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
-        <!-- 🔹 Card del login -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp"
-            android:background="#FFFFFF"
-            android:elevation="4dp"
-            android:layout_margin="8dp"
-            android:clipToPadding="false"
-            android:translationZ="2dp">
+            android:gravity="center"
+            android:padding="16dp"
+            android:orientation="vertical">
 
-            <!-- Título -->
-            <TextView
-                android:id="@+id/tvTituloLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ingreso al sistema"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#222222"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:id="@+id/tvSubtituloLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dirección de Obras Particulares"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:layout_marginBottom="16dp" />
-
-            <!-- 🔹 Estado de conexión -->
-            <TextView
-                android:id="@+id/tvConnectivityStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Modo: Online"
-                android:textStyle="bold"
-                android:textSize="13sp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:background="#203EBD84"
-                android:textColor="#1A7A50"
-                android:layout_marginBottom="20dp" />
-
-            <!-- 🔹 Campo Usuario -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Usuario"
-                android:textSize="13sp"
-                android:textColor="#555555"
-                android:layout_marginBottom="4dp" />
-
-            <EditText
-                android:id="@+id/editTextUsername"
-                android:hint="Ingrese su usuario"
-                android:inputType="text"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:textSize="16sp"
-                android:background="@android:drawable/edit_text" />
-
-            <!-- 🔹 Campo Contraseña con OJITO -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contraseña"
-                android:textSize="13sp"
-                android:textColor="#555555"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="4dp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPassword"
+            <!-- 🔹 Card del login -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconMode="password_toggle"
-                app:endIconTint="#3EBD84">
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="#FFFFFF"
+                android:elevation="4dp"
+                android:layout_margin="8dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="Ingrese su contraseña"
-                    android:inputType="textPassword"
+                <!-- 🔹 Estado de conexión -->
+                <TextView
+                    android:id="@+id/tvConnectivityStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Modo Offline"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:background="#1A9CA3AF"
+                    android:textColor="#6B7280"
+                    android:layout_marginBottom="14dp"
+                    android:visibility="gone" />
 
-            <!-- Botón login -->
-            <Button
-                android:id="@+id/buttonLogin"
-                android:text="Iniciar sesión"
-                android:layout_marginTop="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:backgroundTint="#3EBD84"
-                android:textColor="#FFFFFF"
-                android:textAllCaps="false"
-                android:textSize="15sp"
-                android:stateListAnimator="@null" />
+                <!-- 🔹 Usuario -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Usuario"
+                    android:textSize="13sp"
+                    android:textColor="#555555"
+                    android:layout_marginBottom="4dp" />
 
-            <!-- Loading -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
+                <EditText
+                    android:id="@+id/editTextUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="Ingrese su usuario"
+                    android:inputType="text"
+                    android:imeOptions="actionNext"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textSize="16sp"
+                    android:background="@android:drawable/edit_text" />
 
-            <!-- Pie -->
-            <TextView
-                android:id="@+id/tvFooter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Secretaría de Obras Privadas"
-                android:textSize="11sp"
-                android:textColor="#999999"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp" />
+                <!-- 🔹 Contraseña -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contraseña"
+                    android:textSize="13sp"
+                    android:textColor="#555555"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="4dp" />
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="#3EBD84"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:hint="Ingrese su contraseña"
+                        android:inputType="textPassword"
+                        android:imeOptions="actionDone"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 🔹 Botón login -->
+                <Button
+                    android:id="@+id/buttonLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Iniciar sesión"
+                    android:backgroundTint="#3EBD84"
+                    android:textColor="#FFFFFF"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    android:stateListAnimator="@null" />
+
+                <!-- 🔹 Loading -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone" />
+
+                <!-- 🔹 Mensaje login -->
+                <TextView
+                    android:id="@+id/tvLoginMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="13sp"
+                    android:textColor="#444444"
+                    android:layout_marginTop="10dp" />
+
+                <!-- 🔹 Footer -->
+                <TextView
+                    android:id="@+id/tvFooter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Secretaría de Obras Privadas"
+                    android:textSize="11sp"
+                    android:textColor="#999999"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp" />
+            </LinearLayout>
         </LinearLayout>
-
-    </LinearLayout>
-
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

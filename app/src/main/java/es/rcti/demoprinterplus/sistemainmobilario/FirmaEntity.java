@@ -6,7 +6,10 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "acta_firmas")
 public class FirmaEntity {
-    @PrimaryKey @NonNull
-    public String localId;
-    public byte[] firmaBytes; // PNG/JPG
+    @PrimaryKey(autoGenerate = true)
+    public int id;
+
+    @NonNull public String localId;
+    public byte[] firmaBytes;
+    public int synced = 0;
 }

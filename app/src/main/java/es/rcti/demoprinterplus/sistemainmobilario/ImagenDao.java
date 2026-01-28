@@ -14,6 +14,9 @@ public interface ImagenDao {
     @Query("SELECT * FROM acta_imagenes WHERE localId=:localId ORDER BY id ASC")
     List<ImagenEntity> listByLocalId(String localId);
 
+    @Query("UPDATE acta_imagenes SET synced = 1 WHERE id = :id")
+    void marcarSynced(int id);
+
     @Query("DELETE FROM acta_imagenes WHERE localId=:localId")
     void deleteByLocalId(String localId);
 }

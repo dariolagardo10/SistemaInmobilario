@@ -6,10 +6,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
-
-    <!-- 📷 Cámara (opcional, para fotos) -->
+    <!-- 📷 Cámara -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Android 12 o menor -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -44,7 +51,8 @@
         <!-- 🟢 LOGIN: Pantalla principal (launcher) -->
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -61,9 +69,11 @@
             android:name=".ParcelDetailActivity"
             android:exported="false" />
 
+        <!-- ✅ Recomendado también para pantallas con muchos inputs -->
         <activity
             android:name=".ActaInfraccionActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <!-- 📁 FileProvider (para compartir imágenes) -->
         <provider

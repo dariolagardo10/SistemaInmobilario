@@ -4,6 +4,8 @@ package es.rcti.demoprinterplus.sistemainmobilario;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import retrofit2.Call;
+
+import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.graphics.Bitmap;
@@ -98,6 +100,7 @@ import retrofit2.Response;
 public class ActaInfraccionActivity extends AppCompatActivity {
 
     private String nombreInspector;
+
     private String apellidoInspector;
     private String legajoInspector;
     private String inspectorId;
@@ -942,6 +945,11 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    // ===============================
+// ✅ guardarOffline() (GUARDA IMÁGENES EN GALERÍA)
+// ===============================
     private void guardarOffline(ActaInfraccionData acta) {
         new Thread(() -> {
             String localId = java.util.UUID.randomUUID().toString();
@@ -949,6 +957,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             AppDb db = AppDb.get(getApplicationContext());
 
             ActaEntity e = new ActaEntity();
+
             // ===== guardar checks (INFRACCION) =====
             e.cartelObra = acta.isCartelObra() ? 1 : 0;
             e.dispositivosSeguridad = acta.isDispositivosSeguridad() ? 1 : 0;
@@ -962,7 +971,7 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             e.incumplimiento = acta.isIncumplimiento() ? 1 : 0;
             e.clausuraPreventiva = acta.isClausuraPreventiva() ? 1 : 0;
 
-// ===== inspección =====
+            // ===== inspección =====
             e.resultadoInspeccion = n(acta.getResultadoInspeccion());
 
             e.localId = localId;
@@ -1003,9 +1012,6 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                 e.resultadoInspeccion = n(acta.getResultadoInspeccion());
                 e.infraccionDesc = "";
             } else {
-                // Acá guardamos el "detalle" de faltas como texto.
-                // Si vos ya armás un texto final en algún lado, ponelo acá.
-                // Si no, lo generamos desde los booleanos.
                 e.infraccionDesc = generarTextoFaltas(acta);
                 e.resultadoInspeccion = "";
             }
@@ -1030,15 +1036,35 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                 }
             }
 
-            // Guardar imágenes (List<Uri>)
+            // ===============================
+            // ✅ Guardar imágenes en GALERÍA (MediaStore)
+            // ===============================
             List<Uri> imgs = acta.getImagenesPrueba();
             if (imgs != null) {
                 for (Uri uri : imgs) {
                     if (uri == null) continue;
-                    ImagenEntity img = new ImagenEntity();
-                    img.localId = localId;
-                    img.uriString = uri.toString();
-                    db.imagenDao().insert(img);
+
+                    try {
+                        Uri uriGaleria = guardarImagenUriEnGaleria(uri); // devuelve content://...
+
+                        ImagenEntity img = new ImagenEntity();
+                        img.localId = localId;
+                        img.uriString = uriGaleria.toString();
+                        img.synced = 0;
+                        db.imagenDao().insert(img);
+
+                        Log.d(TAG, "✅ Imagen guardada en galería: " + uriGaleria);
+
+                    } catch (Exception ex) {
+                        Log.e(TAG, "❌ Error guardando imagen en galería, guardo URI original: " + uri, ex);
+
+                        // fallback: guardo igual el uri original
+                        ImagenEntity img = new ImagenEntity();
+                        img.localId = localId;
+                        img.uriString = uri.toString();
+                        img.synced = 0;
+                        db.imagenDao().insert(img);
+                    }
                 }
             }
 
@@ -1048,6 +1074,67 @@ public class ActaInfraccionActivity extends AppCompatActivity {
             runOnUiThread(() -> showToast("Acta guardada OFFLINE. Se sincroniza automáticamente al volver internet."));
         }).start();
     }
+
+    // ===============================
+// ✅ Copia un Uri (content:// o file://) a la GALERÍA
+// Guarda en Pictures/Actas y devuelve el Uri final (content://)
+// ===============================
+    private Uri guardarImagenUriEnGaleria(Uri sourceUri) throws Exception {
+        String fileName = "ACTA_" + System.currentTimeMillis() + ".jpg";
+
+        android.content.ContentValues values = new android.content.ContentValues();
+        values.put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, fileName);
+        values.put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(android.provider.MediaStore.Images.Media.RELATIVE_PATH,
+                android.os.Environment.DIRECTORY_PICTURES + "/Actas");
+
+        Uri collection = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Uri destUri = getContentResolver().insert(collection, values);
+        if (destUri == null) throw new IllegalStateException("No se pudo insertar en MediaStore");
+
+        try (java.io.InputStream in = getContentResolver().openInputStream(sourceUri);
+             java.io.OutputStream out = getContentResolver().openOutputStream(destUri)) {
+
+            if (in == null || out == null) throw new IllegalStateException("No se pudo abrir streams");
+
+            byte[] buffer = new byte[8192];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            out.flush();
+        }
+
+        return destUri;
+    }
+
+    // ===============================
+// helper
+// ===============================
+
+
+    private Uri guardarImagenEnGaleria(Bitmap bitmap) throws IOException {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "ACTA_" + System.currentTimeMillis() + ".jpg");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Actas");
+
+        Uri uri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                values
+        );
+
+        if (uri == null) throw new IOException("No se pudo crear URI en galería");
+
+        try (OutputStream out = getContentResolver().openOutputStream(uri)) {
+            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)) {
+                throw new IOException("No se pudo escribir imagen");
+            }
+        }
+
+        return uri; // content://...
+    }
+
 
     private String n(String s) { return (s == null) ? "" : s.trim(); }
 
@@ -1500,6 +1587,27 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                         .show();
             }
         }
+    }
+
+
+    private Uri copiarImagenAStoragePrivado(Uri src) throws IOException {
+        File dir = new File(getFilesDir(), "offline_imgs");
+        if (!dir.exists()) dir.mkdirs();
+
+        String name = "IMG_" + System.currentTimeMillis() + ".jpg";
+        File dst = new File(dir, name);
+
+        try (java.io.InputStream in = getContentResolver().openInputStream(src);
+             java.io.FileOutputStream out = new java.io.FileOutputStream(dst)) {
+
+            if (in == null) throw new IOException("No se pudo abrir InputStream de: " + src);
+
+            byte[] buf = new byte[8192];
+            int len;
+            while ((len = in.read(buf)) != -1) out.write(buf, 0, len);
+        }
+
+        return Uri.fromFile(dst); // ✅ file://... siempre legible luego
     }
 
     private boolean isNetworkAvailable() {

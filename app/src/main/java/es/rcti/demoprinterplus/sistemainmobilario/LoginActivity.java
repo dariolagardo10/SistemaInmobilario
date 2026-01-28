@@ -1,6 +1,7 @@
 package es.rcti.demoprinterplus.sistemainmobilario;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +23,12 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etUsuario, etPassword;
     private Button btnLogin;
     private ProgressBar progressBar;
-    private TextView tvEstadoConexion;
+
+    // ✅ Badge offline + mensajes de login separados
+    private TextView tvConnectivityStatus; // tvConnectivityStatus (badge)
+    private TextView tvLoginMessage;       // tvLoginMessage (mensajes)
+
+    private boolean toastOfflineMostrado = false;
 
     private ApiClient apiClient;
     private static final String TAG = "LoginActivity";
@@ -30,6 +36,10 @@ public class LoginActivity extends AppCompatActivity {
     // Room
     private AppDb db;
     private InspectorDao inspectorDao;
+
+    // ✅ Callback para cambios de red
+    private android.net.ConnectivityManager connectivityManager;
+    private android.net.ConnectivityManager.NetworkCallback networkCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +50,73 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.editTextPassword);
         btnLogin = findViewById(R.id.buttonLogin);
         progressBar = findViewById(R.id.progressBar);
-        tvEstadoConexion = findViewById(R.id.tvConnectivityStatus);
+
+        // ✅ NUEVOS IDs del XML modificado
+        tvConnectivityStatus = findViewById(R.id.tvConnectivityStatus);
+        tvLoginMessage = findViewById(R.id.tvLoginMessage);
 
         apiClient = new ApiClient(this);
 
         db = AppDb.get(getApplicationContext());
         inspectorDao = db.inspectorDao();
 
+        // ✅ Estado inicial del badge
+        updateConnectivityUI(NetworkUtils.isOnline(this));
+
+        // ✅ Escuchar cambios de red (Android N+)
+        setupNetworkCallback();
+
         btnLogin.setOnClickListener(v -> verificarUsuario());
+    }
+
+    private void setupNetworkCallback() {
+        connectivityManager = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && connectivityManager != null) {
+            networkCallback = new android.net.ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(android.net.Network network) {
+                    runOnUiThread(() -> updateConnectivityUI(NetworkUtils.isOnline(LoginActivity.this)));
+                }
+
+                @Override
+                public void onLost(android.net.Network network) {
+                    runOnUiThread(() -> updateConnectivityUI(NetworkUtils.isOnline(LoginActivity.this)));
+                }
+
+                @Override
+                public void onCapabilitiesChanged(android.net.Network network,
+                                                  android.net.NetworkCapabilities networkCapabilities) {
+                    boolean online = networkCapabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                            && networkCapabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+                    runOnUiThread(() -> updateConnectivityUI(online));
+                }
+            };
+
+            try {
+                connectivityManager.registerDefaultNetworkCallback(networkCallback);
+            } catch (Exception e) {
+                Log.e(TAG, "No se pudo registrar NetworkCallback: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    // ✅ Online: badge oculto. Offline: badge visible + toast 1 vez
+    private void updateConnectivityUI(boolean online) {
+        if (tvConnectivityStatus == null) return;
+
+        if (online) {
+            tvConnectivityStatus.setVisibility(View.GONE);
+            toastOfflineMostrado = false;
+        } else {
+            tvConnectivityStatus.setText("Modo Offline");
+            tvConnectivityStatus.setVisibility(View.VISIBLE);
+
+            if (!toastOfflineMostrado) {
+                Toast.makeText(this, "Trabajando sin conexión", Toast.LENGTH_SHORT).show();
+                toastOfflineMostrado = true;
+            }
+        }
     }
 
     private void verificarUsuario() {
@@ -110,15 +179,16 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             InspectorEntity i = new InspectorEntity();
                             i.inspectorId = safe(inspectorId).isEmpty() ? username : inspectorId; // fallback
-                            i.username = username; // ✅ CLAVE: guardar lo que escribe el usuario
-                            i.legajo = safe(legajo); // si viene vacío no pasa nada
+                            i.username = username; // ✅ guardar lo que escribe el usuario
+                            i.legajo = safe(legajo);
                             i.nombre = nombre;
                             i.apellido = apellido;
                             i.passHash = passHash;
                             i.lastLoginAt = System.currentTimeMillis();
 
                             inspectorDao.upsert(i);
-                            Log.d(TAG, "Inspector guardado en cache offline. id=" + i.inspectorId + " user=" + i.username + " legajo=" + i.legajo);
+                            Log.d(TAG, "Inspector guardado en cache offline. id=" + i.inspectorId +
+                                    " user=" + i.username + " legajo=" + i.legajo);
                         } catch (Exception e) {
                             Log.e(TAG, "Error guardando inspector cache", e);
                         }
@@ -228,9 +298,12 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setEnabled(!mostrar);
     }
 
+    // ✅ Mensajes: van al TextView nuevo (no al badge)
     private void mostrarMensaje(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-        tvEstadoConexion.setText(msg);
+        if (tvLoginMessage != null) {
+            tvLoginMessage.setText(msg);
+        }
     }
 
     private static String safe(String s) {
@@ -250,6 +323,22 @@ public class LoginActivity extends AppCompatActivity {
             return hex.toString();
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // ✅ Unregister callback
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                && connectivityManager != null
+                && networkCallback != null) {
+            try {
+                connectivityManager.unregisterNetworkCallback(networkCallback);
+            } catch (Exception e) {
+                Log.e(TAG, "Error unregisterNetworkCallback: " + e.getMessage(), e);
+            }
         }
     }
 }
