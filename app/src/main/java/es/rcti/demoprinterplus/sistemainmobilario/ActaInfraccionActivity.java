@@ -48,12 +48,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.google.android.material.textfield.TextInputLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -105,11 +107,21 @@ public class ActaInfraccionActivity extends AppCompatActivity {
     private String legajoInspector;
     private String inspectorId;
     private CheckBox cbIncumplimiento, cbClausuraPreventiva;
+    private CheckBox cbMismoLugar; // 👈 Same address checkbox
+    
+    // UI Refactor - Toggle Mode
+    private Button btnModeInfraccion, btnModeInspeccion;
+    private LinearLayout layoutContainerInfraccion, layoutContainerInspeccion;
+    private boolean isModeInspeccion = false; // Default: Infraccion
+
     private Button btnSeleccionarCausasInspeccion;      // 👈 NUEVO
     private TextView tvCausasSeleccionadasInspeccion;   // 👈 NUEVO
+    private TextView btnLimpiarInfraccion, btnLimpiarInspeccion; // 👈 CLEAR BUTTONS (TEXT)
+    private TextView tvErrorSelection; // 👈 Error label
 
     private LinearLayout layoutCausasCheckBoxes;
-    private Button btnSeleccionarCausas;      // 👈 nuevo
+    // btnSeleccionarCausas restored
+    private Button btnSeleccionarCausas; 
     private TextView tvCausasSeleccionadas;
     private Button btnExpandSignature, btnClearSignature;
     private Bitmap firmaInfractorBitmap;
@@ -123,10 +135,13 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
     private EditText etPropietario, etDomicilio, etLugarInfraccion, etSeccion, etChacra, etManzana,
             etParcela, etLote, etPartida, etObservaciones, etBoletaInspeccion;
+    private TextInputLayout tilPropietario, tilDomicilio, tilLugarInfraccion;
+
     private CheckBox cbCartelObra, cbDispositivosSeguridad, cbNumeroPermiso, cbMaterialesVereda,
             cbCercoObra, cbPlanosAprobados, cbDirectorObra, cbVarios;
     //private Button btnGuardarImprimir, btnClearSignature, btnAddImages;
-    private Button btnGuardarImprimir, btnAddImages, btnFirma;
+    private Button btnGuardarImprimir, btnAddImages, btnFirma, btnCancelar;
+    private ImageButton btnCancelHeader;
     private SignatureView signatureView;
     private RecyclerView rvImages;
     private ImageAdapter imageAdapter;
@@ -198,18 +213,15 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         apiClient = new ApiClient(this);
 
         // ✅ RECIBIR DATOS DEL INSPECTOR (VIENEN DESDE ParcelDetailActivity)
-        String nombreInspector  = getIntent().getStringExtra("NOMBRE_INSPECTOR");
-        String apellidoInspector = getIntent().getStringExtra("APELLIDO_INSPECTOR");
-        String legajoInspector  = getIntent().getStringExtra("LEGAJO_INSPECTOR");
-        String inspectorId      = getIntent().getStringExtra("INSPECTOR_ID");
+        nombreInspector = getIntent().getStringExtra("NOMBRE_INSPECTOR");
+        apellidoInspector = getIntent().getStringExtra("APELLIDO_INSPECTOR");
+        legajoInspector = getIntent().getStringExtra("LEGAJO_INSPECTOR");
+        inspectorId = getIntent().getStringExtra("INSPECTOR_ID");
 
-        // ✅ LOG (para verificar)
-        Log.d(TAG, "✅ Inspector recibido en ActaInfraccionActivity: " +
-                (nombreInspector != null ? nombreInspector : "") + " " +
-                (apellidoInspector != null ? apellidoInspector : "") +
-                " | Legajo: " + (legajoInspector != null ? legajoInspector : "null") +
-                " | ID: " + (inspectorId != null ? inspectorId : "null")
-        );
+        Log.d(TAG, "✅ Datos del inspector recibidos en ActaInfraccionActivity: "
+                + nombreInspector + " " + apellidoInspector
+                + " | Legajo: " + legajoInspector
+                + " | ID: " + inspectorId);
 
         initViews();
         fillInitialData();
@@ -233,7 +245,13 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         etParcela          = findViewById(R.id.etParcela);
         etLote             = findViewById(R.id.etLote);
         etPartida          = findViewById(R.id.etPartida);
+        etPartida          = findViewById(R.id.etPartida);
         etObservaciones    = findViewById(R.id.etObservaciones);
+
+        // ✅ TextInputLayouts for Validation
+        tilPropietario     = findViewById(R.id.tilPropietario);
+        tilDomicilio       = findViewById(R.id.tilDomicilio);
+        tilLugarInfraccion = findViewById(R.id.tilLugarInfraccion);
 
         etBoletaInspeccion = findViewById(R.id.etBoletaInspeccion);
         if (etBoletaInspeccion != null) {
@@ -252,16 +270,40 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
         // ✅ NUEVOS (backend)
         cbIncumplimiento        = findViewById(R.id.cbIncumplimiento);
+        // ✅ NUEVOS (backend)
+        cbIncumplimiento        = findViewById(R.id.cbIncumplimiento);
         cbClausuraPreventiva    = findViewById(R.id.cbClausuraPreventiva);
+        
+        // Checkbox "Mismo Lugar"
+        cbMismoLugar = findViewById(R.id.cbMismoLugar);
+        // Default state: Checked -> Hide LugarInfraccion input
+        if (cbMismoLugar != null) {
+            cbMismoLugar.setChecked(true);
+            if (tilLugarInfraccion != null) tilLugarInfraccion.setVisibility(View.GONE);
+        }
+
+
+
+        // ✅ UI Toggle Mode Init
+        btnModeInfraccion = findViewById(R.id.btnModeInfraccion);
+        btnModeInspeccion = findViewById(R.id.btnModeInspeccion);
+        layoutContainerInfraccion = findViewById(R.id.layoutContainerInfraccion);
+        layoutContainerInspeccion = findViewById(R.id.layoutContainerInspeccion);
 
         // ✅ Botones + textos resumen
         btnSeleccionarCausas = findViewById(R.id.btnSeleccionarCausas);
         tvCausasSeleccionadas = findViewById(R.id.tvCausasSeleccionadas);
-
+        btnLimpiarInfraccion = findViewById(R.id.btnLimpiarInfraccion); // 👈 Init
+        
         btnSeleccionarCausasInspeccion = findViewById(R.id.btnSeleccionarCausasInspeccion);
         tvCausasSeleccionadasInspeccion = findViewById(R.id.tvCausasSeleccionadasInspeccion);
+        btnLimpiarInspeccion = findViewById(R.id.btnLimpiarInspeccion); // 👈 Init
+        
+        tvErrorSelection = findViewById(R.id.tvErrorSelection);
 
         btnGuardarImprimir = findViewById(R.id.btnGuardarImprimir);
+        btnCancelar = findViewById(R.id.btnCancelar);
+        btnCancelHeader = findViewById(R.id.btnCancelHeader);
 
         // ✅ Firma e imágenes
         signatureView = findViewById(R.id.signatureView);
@@ -336,6 +378,17 @@ public class ActaInfraccionActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
+        // ✅ NAVIGATION: Cancel / X -> Main Map (Clean state)
+        View.OnClickListener cancelListener = v -> {
+            Intent intent = new Intent(ActaInfraccionActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        };
+
+        if (btnCancelHeader != null) btnCancelHeader.setOnClickListener(cancelListener);
+        if (btnCancelar != null) btnCancelar.setOnClickListener(cancelListener);
+
         // Guardar + Imprimir
         btnGuardarImprimir.setOnClickListener(v -> {
             if (!validateForm()) return;
@@ -383,8 +436,92 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         if (btnSeleccionarCausas != null) {
             btnSeleccionarCausas.setOnClickListener(v -> mostrarDialogoCausas());
         }
+        
+        // Listeners Toggle Mode
+        if (btnModeInfraccion != null) {
+            btnModeInfraccion.setOnClickListener(v -> setMode(false));
+        }
+        if (btnModeInspeccion != null) {
+            btnModeInspeccion.setOnClickListener(v -> setMode(true));
+        }
+
         if (btnSeleccionarCausasInspeccion != null) {
             btnSeleccionarCausasInspeccion.setOnClickListener(v -> mostrarDialogoCausasInspeccion());
+        }
+
+        // ✅ Clear Buttons
+        if (btnLimpiarInfraccion != null) {
+            btnLimpiarInfraccion.setOnClickListener(v -> limpiarInfraccion());
+        }
+        if (btnLimpiarInspeccion != null) {
+            btnLimpiarInspeccion.setOnClickListener(v -> limpiarInspeccion());
+        }
+
+        // Toggle Lugar Infracción visibility
+        if (cbMismoLugar != null) {
+            cbMismoLugar.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (tilLugarInfraccion != null) {
+                    tilLugarInfraccion.setVisibility(isChecked ? View.GONE : View.VISIBLE);
+                    if (isChecked) {
+                        // Clear error when hidden
+                        tilLugarInfraccion.setError(null);
+                        etLugarInfraccion.setText(""); 
+                    }
+                }
+            });
+        }
+    }
+
+    private void setMode(boolean isInspeccion) {
+        // EXCLUSIVE SELECTION LOGIC
+        if (isInspeccion) {
+            // Trying to switch to INSPECCION. Check if INFRACCION has data.
+            if (hasInfractionData()) {
+                showToast("Tiene faltas de tipo Infracción seleccionadas. Elimínelas para cambiar de acta.");
+                return; // BLOCK SWITCH
+            }
+        } else {
+            // Trying to switch to INFRACCION. Check if INSPECCION has data.
+            if (hasInspectionData()) {
+                showToast("Tiene resultados de Inspección seleccionados. Elimínelos para cambiar de acta.");
+                return; // BLOCK SWITCH
+            }
+        }
+        
+        this.isModeInspeccion = isInspeccion;
+        // ... (styling logic continues below, unchanged chunks)
+        // Toggle Buttons Style
+        if (isInspeccion) {
+            // Active: Inspeccion (Green)
+            if (btnModeInspeccion != null) {
+                btnModeInspeccion.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3EBD84")));
+                btnModeInspeccion.setTextColor(Color.WHITE);
+            }
+            // Inactive: Infraccion (Grey)
+            if (btnModeInfraccion != null) {
+                btnModeInfraccion.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
+                btnModeInfraccion.setTextColor(Color.parseColor("#757575"));
+            }
+
+            // Containers
+            if (layoutContainerInspeccion != null) layoutContainerInspeccion.setVisibility(View.VISIBLE);
+            if (layoutContainerInfraccion != null) layoutContainerInfraccion.setVisibility(View.GONE);
+
+        } else {
+            // Active: Infraccion (Green)
+            if (btnModeInfraccion != null) {
+                btnModeInfraccion.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3EBD84")));
+                btnModeInfraccion.setTextColor(Color.WHITE);
+            }
+            // Inactive: Inspeccion (Grey)
+            if (btnModeInspeccion != null) {
+                btnModeInspeccion.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
+                btnModeInspeccion.setTextColor(Color.parseColor("#757575"));
+            }
+
+            // Containers
+            if (layoutContainerInfraccion != null) layoutContainerInfraccion.setVisibility(View.VISIBLE);
+            if (layoutContainerInspeccion != null) layoutContainerInspeccion.setVisibility(View.GONE);
         }
     }
 
@@ -434,14 +571,18 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < items.length; i++) {
                         if (checked[i]) {
-                            if (sb.length() > 0) sb.append(" / ");
-                            sb.append(items[i]);
+                            if (sb.length() > 0) sb.append("\n"); // New line
+                            sb.append("• ").append(items[i]);     // Bullet
                         }
                     }
 
-                    tvCausasSeleccionadas.setText(sb.length() == 0
-                            ? "Ninguna causa seleccionada"
-                            : sb.toString());
+                    if (sb.length() == 0) {
+                        tvCausasSeleccionadas.setText("Ninguna causa seleccionada");
+                        if (btnLimpiarInfraccion != null) btnLimpiarInfraccion.setVisibility(View.GONE);
+                    } else {
+                        tvCausasSeleccionadas.setText(sb.toString());
+                        if (btnLimpiarInfraccion != null) btnLimpiarInfraccion.setVisibility(View.VISIBLE);
+                    }
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
@@ -487,15 +628,17 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < items.length; i++) {
                         if (checked[i]) {
-                            if (sb.length() > 0) sb.append(" / ");
-                            sb.append(items[i]);
+                            if (sb.length() > 0) sb.append("\n");
+                            sb.append("• ").append(items[i]);
                         }
                     }
 
                     if (sb.length() == 0) {
                         tvCausasSeleccionadasInspeccion.setText("Ningún resultado seleccionado");
+                        if (btnLimpiarInspeccion != null) btnLimpiarInspeccion.setVisibility(View.GONE);
                     } else {
                         tvCausasSeleccionadasInspeccion.setText(sb.toString());
+                        if (btnLimpiarInspeccion != null) btnLimpiarInspeccion.setVisibility(View.VISIBLE);
                     }
 
                     // ✅ Marcar tipo de actuación automáticamente: INSPECCIÓN
@@ -505,6 +648,50 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                 .show();
     }
 
+
+    // ==========================================
+    //  EXTRAS: CLEAR & CHECK METHODS
+    // ==========================================
+
+    private void limpiarInfraccion() {
+        cbCartelObra.setChecked(false);
+        cbDispositivosSeguridad.setChecked(false);
+        cbNumeroPermiso.setChecked(false);
+        cbMaterialesVereda.setChecked(false);
+        cbCercoObra.setChecked(false);
+        cbPlanosAprobados.setChecked(false);
+        cbDirectorObra.setChecked(false);
+        cbVarios.setChecked(false);
+        cbIncumplimiento.setChecked(false);
+        cbClausuraPreventiva.setChecked(false);
+        
+        tvCausasSeleccionadas.setText("Ninguna causa seleccionada");
+        if (btnLimpiarInfraccion != null) btnLimpiarInfraccion.setVisibility(View.GONE);
+    }
+
+    private void limpiarInspeccion() {
+        tvCausasSeleccionadasInspeccion.setText("Ningún resultado seleccionado");
+        if (btnLimpiarInspeccion != null) btnLimpiarInspeccion.setVisibility(View.GONE);
+    }
+
+    private boolean hasInfractionData() {
+        return cbCartelObra.isChecked() ||
+               cbDispositivosSeguridad.isChecked() ||
+               cbNumeroPermiso.isChecked() ||
+               cbMaterialesVereda.isChecked() ||
+               cbCercoObra.isChecked() ||
+               cbPlanosAprobados.isChecked() ||
+               cbDirectorObra.isChecked() ||
+               cbVarios.isChecked() ||
+               cbIncumplimiento.isChecked() ||
+               cbClausuraPreventiva.isChecked();
+    }
+
+    private boolean hasInspectionData() {
+        if (tvCausasSeleccionadasInspeccion == null) return false;
+        String text = tvCausasSeleccionadasInspeccion.getText().toString().trim();
+        return !text.isEmpty() && !text.equals("Ningún resultado seleccionado");
+    }
 
     private void resetForm() {
         firmaInfractorBitmap = null;
@@ -696,11 +883,31 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
 
     private boolean validateForm() {
+        boolean esValido = true;
+
         // 1) Campos básicos obligatorios
-        if (etPropietario.getText().toString().trim().isEmpty() ||
-                etLugarInfraccion.getText().toString().trim().isEmpty()) {
-            showToast("Complete los campos obligatorios");
-            return false;
+        if (etPropietario.getText().toString().trim().isEmpty()) {
+            tilPropietario.setError("Campo requerido");
+            esValido = false;
+        } else {
+            tilPropietario.setError(null);
+        }
+
+        if (etDomicilio.getText().toString().trim().isEmpty()) {
+             tilDomicilio.setError("Campo requerido");
+             esValido = false;
+        } else {
+             tilDomicilio.setError(null);
+        }
+
+        // Validate LugarInfraccion ONLY if Same Address is NOT checked
+        if (cbMismoLugar != null && !cbMismoLugar.isChecked()) {
+             if (etLugarInfraccion.getText().toString().trim().isEmpty()) {
+                tilLugarInfraccion.setError("Campo requerido");
+                esValido = false;
+            } else {
+                tilLugarInfraccion.setError(null);
+            }
         }
 
         // 2) ¿Hay alguna causa de INFRACCIÓN marcada? (checkboxes)
@@ -725,25 +932,50 @@ public class ActaInfraccionActivity extends AppCompatActivity {
                     && !texto.equals("Ningún resultado seleccionado");
         }
 
-        // 4) Debe haber AL MENOS uno de los dos
-        if (!hayCausaInfraccion && !hayCausaInspeccion) {
-            showToast("Seleccione al menos una causa de infracción o un resultado de inspección");
-            return false;
+        // 4) Validar Selección según MODO ACTIVO
+        boolean seleccionValida = false;
+
+        if (isModeInspeccion) {
+             // Modo Inspección: Verificar texto
+             if (tvCausasSeleccionadasInspeccion != null) {
+                String texto = tvCausasSeleccionadasInspeccion.getText().toString().trim();
+                if (!texto.isEmpty() && !texto.equals("Ningún resultado seleccionado")) {
+                    seleccionValida = true;
+                }
+            }
+        } else {
+            // Modo Infracción: Verificar checkboxes
+            // NOTA: layoutCausasCheckBoxes ahora es visible siempre en este modo
+            seleccionValida = 
+                    cbCartelObra.isChecked() ||
+                    cbDispositivosSeguridad.isChecked() ||
+                    cbNumeroPermiso.isChecked() ||
+                    cbMaterialesVereda.isChecked() ||
+                    cbCercoObra.isChecked() ||
+                    cbPlanosAprobados.isChecked() ||
+                    cbDirectorObra.isChecked() ||
+                    cbVarios.isChecked() ||
+                    cbIncumplimiento.isChecked() ||
+                    cbClausuraPreventiva.isChecked();
         }
 
-        // 5) No puede haber AMBOS al mismo tiempo
-        if (hayCausaInfraccion && hayCausaInspeccion) {
-            showToast("No puede seleccionar causas de infracción y resultados de inspección al mismo tiempo. Elija solo uno de los dos.");
-            return false;
+        if (!seleccionValida) {
+            if (tvErrorSelection != null) {
+                tvErrorSelection.setVisibility(View.VISIBLE);
+                tvErrorSelection.setText("Debe seleccionar una opción");
+            }
+            esValido = false;
+        } else {
+            if (tvErrorSelection != null) {
+                tvErrorSelection.setVisibility(View.GONE);
+            }
         }
 
-        // 6) Sincronizamos el tipo de acta según lo que eligió
+        if (!esValido) {
+            showToast("Por favor, corrija los errores marcados");
+        }
 
-
-        // (Opcional) validar firma si querés
-        // if (firmaInfractorBitmap == null) { ... }
-
-        return true;
+        return esValido;
     }
 
     private void guardarYImprimir() {
@@ -1964,7 +2196,13 @@ public class ActaInfraccionActivity extends AppCompatActivity {
 
         acta.setPropietario(etPropietario.getText().toString());
         acta.setDomicilio(etDomicilio.getText().toString());
-        acta.setLugarInfraccion(etLugarInfraccion.getText().toString());
+        
+        // Handle "Same Address" logic
+        if (cbMismoLugar != null && cbMismoLugar.isChecked()) {
+            acta.setLugarInfraccion(etDomicilio.getText().toString());
+        } else {
+            acta.setLugarInfraccion(etLugarInfraccion.getText().toString());
+        }
 
         // Fecha y hora actual
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -2013,33 +2251,50 @@ public class ActaInfraccionActivity extends AppCompatActivity {
         }
 
         String tipoActa;
-        if (hayCausaInspeccion && !hayCausaInfraccion) {
+        if (isModeInspeccion) {
             tipoActa = "INSPECCION";
+            // Limpiar datos de infracción por seguridad (opcional, pero limpio)
+            acta.setResultadoInspeccion(detalleInspeccion);
+            
+            // Clear infraction flags
+            acta.setCartelObra(false);
+            acta.setDispositivosSeguridad(false);
+            // ... (etc) - Just rely on logic below
+            
         } else {
-            // Por defecto, si no hay inspección (o si por algún error vinieran ambas),
-            // lo tratamos como INFRACCION
             tipoActa = "INFRACCION";
+            acta.setResultadoInspeccion("");
         }
         acta.setTipoActa(tipoActa);
 
-        // 🔹 Resultado de inspección (solo si es INSPECCION)
-        if ("INSPECCION".equals(tipoActa)) {
-            acta.setResultadoInspeccion(detalleInspeccion);
+        // Causas de infracción (checkboxes) 
+        // Solo asignamos si estamos en modo Infracción, o si queremos guardarlos igual "por si acaso" el usuario cambió de tab pero dejó marcados?
+        // El usuario pidió "seleccionar uno o otro". Mejor guardar solo lo del modo activo.
+        
+        if (!isModeInspeccion) {
+            acta.setCartelObra(cbCartelObra.isChecked());
+            acta.setDispositivosSeguridad(cbDispositivosSeguridad.isChecked());
+            acta.setNumeroPermiso(cbNumeroPermiso.isChecked());
+            acta.setMaterialesVereda(cbMaterialesVereda.isChecked());
+            acta.setCercoObra(cbCercoObra.isChecked());
+            acta.setPlanosAprobados(cbPlanosAprobados.isChecked());
+            acta.setDirectorObra(cbDirectorObra.isChecked());
+            acta.setVarios(cbVarios.isChecked());
+            acta.setIncumplimiento(cbIncumplimiento.isChecked());
+            acta.setClausuraPreventiva(cbClausuraPreventiva.isChecked());
         } else {
-            acta.setResultadoInspeccion("");
+            // En modo inspeccion, todo a false
+            acta.setCartelObra(false);
+            acta.setDispositivosSeguridad(false);
+            acta.setNumeroPermiso(false);
+            acta.setMaterialesVereda(false);
+            acta.setCercoObra(false);
+            acta.setPlanosAprobados(false);
+            acta.setDirectorObra(false);
+            acta.setVarios(false);
+            acta.setIncumplimiento(false);
+            acta.setClausuraPreventiva(false);
         }
-
-        // Causas de infracción (checkboxes)
-        acta.setCartelObra(cbCartelObra.isChecked());
-        acta.setDispositivosSeguridad(cbDispositivosSeguridad.isChecked());
-        acta.setNumeroPermiso(cbNumeroPermiso.isChecked());
-        acta.setMaterialesVereda(cbMaterialesVereda.isChecked());
-        acta.setCercoObra(cbCercoObra.isChecked());
-        acta.setPlanosAprobados(cbPlanosAprobados.isChecked());
-        acta.setDirectorObra(cbDirectorObra.isChecked());
-        acta.setVarios(cbVarios.isChecked());
-        acta.setIncumplimiento(cbIncumplimiento.isChecked());
-        acta.setClausuraPreventiva(cbClausuraPreventiva.isChecked());
         acta.setObservaciones(etObservaciones.getText().toString());
         acta.setBoletaInspeccion(etBoletaInspeccion.getText().toString());
         acta.setLogoResourceId(LOGO_RESOURCE_ID);

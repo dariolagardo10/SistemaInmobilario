@@ -13,32 +13,50 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#3EBD84"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingEnd="8dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Información de Parcela"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textViewSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Detalle catastral y datos asociados"
-            android:textSize="13sp"
-            android:textColor="#E9FFFA"
-            android:layout_marginTop="2dp" />
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Información de Parcela"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/textViewSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Detalle catastral y datos asociados"
+                android:textSize="13sp"
+                android:textColor="#E9FFFA"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Botón X para cerrar -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:tint="#FFFFFF"
+            android:contentDescription="Cerrar" />
     </LinearLayout>
 
     <!-- 🔹 Card con el contenido de la parcela -->
@@ -101,16 +119,33 @@
 
     </LinearLayout>
 
-    <!-- 🔹 Botón principal -->
+    <!-- 🔹 Botón principal: Aceptar y continuar -->
     <Button
         android:id="@+id/btnGenerateActa"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Generar acta de infracción"
+        android:text="Aceptar y continuar"
         android:textAllCaps="false"
         android:textSize="15sp"
         android:backgroundTint="#3EBD84"
         android:textColor="#FFFFFF"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btnBackToMap"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 🔹 Botón secundario: Volver -->
+    <Button
+        android:id="@+id/btnBackToMap"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Volver"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:backgroundTint="#E0E0E0"
+        android:textColor="#333333"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"

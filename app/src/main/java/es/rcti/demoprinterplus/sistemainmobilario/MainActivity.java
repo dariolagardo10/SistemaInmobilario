@@ -3,12 +3,12 @@ package es.rcti.demoprinterplus.sistemainmobilario;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +18,8 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +28,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
-    private Button btnActasPendientes;
+    private Snackbar snackbarActasPendientes;
+    private View rootView;
+    private boolean mostrandoExito = false; // Flag para evitar ocultar mensaje de éxito
 
     private static final String TAG = "MainActivity";
     private static final String UNIQUE_SYNC_NAME = "SYNC_INMO_UNIQUE";
@@ -71,25 +75,20 @@ public class MainActivity extends AppCompatActivity {
         // UI
         // =========================
         webView = findViewById(R.id.webView);
-        btnActasPendientes = findViewById(R.id.btnActasPendientes);
-
-        btnActasPendientes.setOnClickListener(v -> {
-            if (syncing) return;
-            mostrarPendientes();
-        });
+        rootView = findViewById(R.id.coordinatorLayout);
 
         setupWebView();
 
         // ✅ Observa el estado del worker y actualiza el contador al finalizar
         setupSyncObserver();
 
-        actualizarBotonPendientes();
+        actualizarSnackbarPendientes();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        actualizarBotonPendientes();
+        actualizarSnackbarPendientes();
     }
 
     // =========================
@@ -108,29 +107,113 @@ public class MainActivity extends AppCompatActivity {
 
                     if (st == androidx.work.WorkInfo.State.RUNNING) {
                         syncing = true;
-                        btnActasPendientes.setEnabled(false);
-                        btnActasPendientes.setText("Sincronizando...");
+                        mostrarSnackbarSincronizando();
                         return;
                     }
 
                     if (st.isFinished()) {
                         syncing = false;
-                        btnActasPendientes.setEnabled(true);
-                        actualizarBotonPendientes(); // ✅ acá se recalcula y desaparece el (1)
+                        
+                        // ✅ Mostrar mensaje de éxito verde
+                        if (st == androidx.work.WorkInfo.State.SUCCEEDED) {
+                            mostrarSnackbarExito();
+                        } else {
+                            // Si falló, actualizar directamente
+                            actualizarSnackbarPendientes();
+                        }
                     }
                 });
     }
 
     // =========================
-    // CONTADOR
+    // SNACKBAR - ACTAS PENDIENTES
     // =========================
-    private void actualizarBotonPendientes() {
+    private void actualizarSnackbarPendientes() {
+        // No actualizar si estamos mostrando el mensaje de éxito
+        if (mostrandoExito) {
+            return;
+        }
+        
         new Thread(() -> {
             int count = actaDao.countPending();
-            runOnUiThread(() ->
-                    btnActasPendientes.setText("Actas pendientes (" + count + ")")
-            );
+            runOnUiThread(() -> {
+                if (count > 0) {
+                    mostrarSnackbarConContador(count);
+                } else {
+                    ocultarSnackbar();
+                }
+            });
         }).start();
+    }
+
+    private void mostrarSnackbarConContador(int count) {
+        String mensaje = count == 1
+                ? "1 acta sin sincronizar"
+                : count + " actas sin sincronizar";
+
+        // Si ya existe el Snackbar, actualizar texto
+        if (snackbarActasPendientes != null && snackbarActasPendientes.isShown()) {
+            snackbarActasPendientes.setText(mensaje);
+            return;
+        }
+
+        // Crear nuevo Snackbar
+        snackbarActasPendientes = Snackbar.make(rootView, mensaje, Snackbar.LENGTH_INDEFINITE)
+                .setAction("SINCRONIZAR", v -> {
+                    if (!syncing) {
+                        confirmarSincronizarTodas(count);
+                    }
+                })
+                .setActionTextColor(getResources().getColor(android.R.color.holo_green_light));
+
+        snackbarActasPendientes.show();
+    }
+
+    private void mostrarSnackbarSincronizando() {
+        if (snackbarActasPendientes != null && snackbarActasPendientes.isShown()) {
+            snackbarActasPendientes.dismiss();
+        }
+
+        snackbarActasPendientes = Snackbar.make(
+                rootView,
+                "Sincronizando actas...",
+                Snackbar.LENGTH_INDEFINITE
+        );
+        snackbarActasPendientes.show();
+    }
+
+    private void ocultarSnackbar() {
+        if (snackbarActasPendientes != null && snackbarActasPendientes.isShown()) {
+            snackbarActasPendientes.dismiss();
+        }
+    }
+
+    private void mostrarSnackbarExito() {
+        mostrandoExito = true; // Activar flag
+        
+        // Ocultar el snackbar anterior
+        if (snackbarActasPendientes != null && snackbarActasPendientes.isShown()) {
+            snackbarActasPendientes.dismiss();
+        }
+
+        // Mostrar mensaje de éxito verde por 3.5 segundos (más visible)
+        snackbarActasPendientes = Snackbar.make(
+                rootView,
+                "✓ Actas sincronizadas correctamente",
+                Snackbar.LENGTH_LONG // 3.5 segundos (antes era SHORT = 2s)
+        );
+        
+        // Fondo verde para éxito
+        snackbarActasPendientes.setBackgroundTint(getResources().getColor(android.R.color.holo_green_dark));
+        snackbarActasPendientes.setTextColor(getResources().getColor(android.R.color.white));
+        
+        snackbarActasPendientes.show();
+
+        // Después de 3.5 segundos, actualizar el contador (que ocultará el snackbar si no hay pendientes)
+        new android.os.Handler().postDelayed(() -> {
+            mostrandoExito = false; // Desactivar flag
+            actualizarSnackbarPendientes();
+        }, 3500); // Aumentado de 2000ms a 3500ms
     }
 
     // =========================
@@ -213,8 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Sí, sincronizar", (d, w) -> {
 
                     syncing = true;
-                    btnActasPendientes.setEnabled(false);
-                    btnActasPendientes.setText("Sincronizando...");
+                    mostrarSnackbarSincronizando();
 
                     // ✅ SOLO 1 CAMINO DE SYNC: SyncWorker
                     ejecutarSyncWorker();

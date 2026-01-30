@@ -24,6 +24,12 @@ public class ParcelDetailActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.parcelDataTextView);
         Button btnGenerateActa = findViewById(R.id.btnGenerateActa);
+        Button btnBackToMap = findViewById(R.id.btnBackToMap);
+        android.widget.ImageButton btnBack = findViewById(R.id.btnBack);
+
+        // 🔹 Botones de navegación atrás
+        btnBackToMap.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> finish());
 
         // ✅ Recuperar datos de la parcela
         String parcelData = getIntent().getStringExtra("PARCEL_DATA");
@@ -48,20 +54,24 @@ public class ParcelDetailActivity extends AppCompatActivity {
         try {
             // Analizar datos JSON
             parcelJson = new JSONObject(parcelData);
-            StringBuilder info = new StringBuilder();
+            android.text.SpannableStringBuilder info = new android.text.SpannableStringBuilder();
 
-            // Añadir campos al texto
-            addFieldIfExists(info, parcelJson, "APYN", "Propietario");
-            addFieldIfExists(info, parcelJson, "CALLE", "Calle");
-            addFieldIfExists(info, parcelJson, "NRO", "Número");
-            addFieldIfExists(info, parcelJson, "SEC", "Sección");
-            addFieldIfExists(info, parcelJson, "CHA", "Chacra");
-            addFieldIfExists(info, parcelJson, "MAN", "Manzana");
-            addFieldIfExists(info, parcelJson, "PAR", "Parcela");
-            addFieldIfExists(info, parcelJson, "LOTE", "Lote");
-            addFieldIfExists(info, parcelJson, "PART", "Partida");
+            // Añadir campos con formato
+            addFieldWithFormat(info, parcelJson, "APYN", "Propietario");
+            addFieldWithFormat(info, parcelJson, "CALLE", "Calle");
+            addFieldWithFormat(info, parcelJson, "NRO", "Número");
+            
+            // Separador visual
+            info.append("\n━━━━━━━━━━━━━━━━━\n\n");
+            
+            addFieldWithFormat(info, parcelJson, "SEC", "Sección");
+            addFieldWithFormat(info, parcelJson, "CHA", "Chacra");
+            addFieldWithFormat(info, parcelJson, "MAN", "Manzana");
+            addFieldWithFormat(info, parcelJson, "PAR", "Parcela");
+            addFieldWithFormat(info, parcelJson, "LOTE", "Lote");
+            addFieldWithFormat(info, parcelJson, "PART", "Partida");
 
-            textView.setText(info.toString());
+            textView.setText(info);
 
             // ✅ Configurar botón para generar acta
             btnGenerateActa.setOnClickListener(v -> {
@@ -92,6 +102,39 @@ public class ParcelDetailActivity extends AppCompatActivity {
                 String value = json.getString(key);
                 if (value != null && !value.isEmpty()) {
                     info.append(label).append(": ").append(value).append("\n\n");
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error al leer campo " + key, e);
+        }
+    }
+    
+    private void addFieldWithFormat(android.text.SpannableStringBuilder builder, JSONObject json, String key, String label) {
+        try {
+            if (json.has(key) && !json.isNull(key)) {
+                String value = json.getString(key);
+                if (value != null && !value.isEmpty()) {
+                    // Añadir label (gris, pequeño)
+                    int labelStart = builder.length();
+                    builder.append(label).append("\n");
+                    int labelEnd = builder.length();
+                    
+                    builder.setSpan(new android.text.style.ForegroundColorSpan(0xFF666666), 
+                                   labelStart, labelEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    builder.setSpan(new android.text.style.RelativeSizeSpan(0.85f), 
+                                   labelStart, labelEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    
+                    // Añadir valor (negro, grande, negrita)
+                    int valueStart = builder.length();
+                    builder.append(value).append("\n\n");
+                    int valueEnd = builder.length() - 2;
+                    
+                    builder.setSpan(new android.text.style.ForegroundColorSpan(0xFF222222), 
+                                   valueStart, valueEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    builder.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 
+                                   valueStart, valueEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    builder.setSpan(new android.text.style.RelativeSizeSpan(1.15f), 
+                                   valueStart, valueEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
         } catch (JSONException e) {

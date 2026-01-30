@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- 🔹 Botón actas pendientes -->
-    <Button
-        android:id="@+id/btnActasPendientes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Actas pendientes (0)"
-        android:padding="14dp"
-        android:backgroundTint="#2E7D32"
-        android:textColor="#FFFFFF"/>
-
-    <!-- 🔹 WebView debajo del botón -->
+    <!-- 🗺️ WebView ocupa toda la pantalla (el mapa GeoJSON) -->
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/btnActasPendientes"/>
+        android:layout_height="match_parent"/>
 
-</RelativeLayout>
+    <!-- ℹ️ Snackbar se mostrará programáticamente desde MainActivity.java -->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

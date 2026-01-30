@@ -1,87 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Posadas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplify-js/1.2.4/simplify.min.js"></script>
-    <script src="simplify.min.js"></script>
-    <style>
-    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
-    #map { height: 100vh; width: 100vw; background-color: transparent; }
-    .loading, .info-panel, .search-container, .progress-bar { position: absolute; z-index: 1000; font-family: Arial, sans-serif; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de Posadas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplify-js/1.2.4/simplify.min.js"></script>
+  <script src="simplify.min.js"></script>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100vw;
+      background-color: transparent;
+    }
+
+    .loading,
+    .info-panel,
+    .search-container,
+    .progress-bar {
+      position: absolute;
+      z-index: 1000;
+      font-family: Arial, sans-serif;
+    }
+
     .loading {
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
+
     .search-container {
-      top: 10px; left: 50%; transform: translateX(-50%);
-      background: white; padding: 10px; border-radius: 5px;
-      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 90%;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 90%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
-    .search-container select, .search-container input, .search-container button {
-      padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
-    }
+
+    .search-container select,
+    .search-container input,
     .search-container button {
-      background: #4CAF50; color: white; cursor: pointer;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
     }
-    .search-container button:hover { background: #45a049; }
-    .progress-bar { width: 90%; bottom: 10px; left: 50%; transform: translateX(-50%); background: #eee; height: 8px; border-radius: 4px; display: none; }
-    .progress { background: #4CAF50; height: 100%; width: 0%; border-radius: 4px; }
+
+    .search-container button {
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    .search-container button:hover {
+      background: #45a049;
+    }
+
+    .progress-bar {
+      width: 90%;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #eee;
+      height: 8px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .progress {
+      background: #4CAF50;
+      height: 100%;
+      width: 0%;
+      border-radius: 4px;
+    }
+
     .info-panel {
-      bottom: 20px; right: 20px; max-width: 300px; max-height: 400px;
-      background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow-y: auto;
+      bottom: 20px;
+      right: 20px;
+      max-width: 300px;
+      max-height: 400px;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
     }
-    .info-panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .info-panel td { padding: 4px; border-bottom: 1px solid #ddd; }
-    .close-btn { position: absolute; top: 5px; right: 5px; background: #f44336; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+
+    .info-panel table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .info-panel td {
+      padding: 4px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     .back-btn {
-      position: absolute; top: 10px; left: 10px; z-index: 1000;
-      background: #4CAF50; color: white; border: none; border-radius: 4px;
-      padding: 8px 12px; cursor: pointer; display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: none;
     }
 
     /* Estilos para eliminar los bordes del mapa */
     .leaflet-container {
       background: transparent !important;
     }
+
     .leaflet-control-zoom {
       margin: 10px !important;
     }
+
     .leaflet-control-attribution {
       display: none !important;
     }
   </style>
 </head>
+
 <body>
-<div class="search-container" id="searchContainer">
+  <div class="search-container" id="searchContainer">
     <select id="sectionSelect"></select>
     <input type="text" id="searchInput" placeholder="Buscar FINCA, LOTE o PART">
     <button onclick="loadGeoJson()">Cargar</button>
-</div>
+  </div>
 
-<button id="backButton" class="back-btn" onclick="resetView()">Volver a búsqueda</button>
-<div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
-<div id="loading" class="loading" style="display: none;">Cargando datos...</div>
-<div id="map"></div>
-<div id="infoPanel" class="info-panel" style="display: none;">
+  <button id="backButton" class="back-btn" onclick="resetView()">Volver a búsqueda</button>
+  <div class="progress-bar" id="progressBar">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div id="loading" class="loading" style="display: none;">Cargando datos...</div>
+  <div id="map"></div>
+  <div id="infoPanel" class="info-panel" style="display: none;">
     <button class="close-btn" onclick="closeInfoPanel()">&times;</button>
     <div id="parcelInfo"></div>
-</div>
+  </div>
 
-<script>
+  <script>
     // Opciones del mapa sin padding ni márgenes
     let map = L.map('map', {
-        attributionControl: false,
-        zoomSnap: 0.1,         // Permitir zoom más fino
-        zoomDelta: 0.5,        // Controles de zoom más precisos
-        maxBoundsViscosity: 1, // Evita que se pueda desplazar fuera de los límites
-        bounceAtZoomLimits: false,
-        zoomControl: true
+      attributionControl: false,
+      zoomSnap: 0.1,         // Permitir zoom más fino
+      zoomDelta: 0.5,        // Controles de zoom más precisos
+      maxBoundsViscosity: 1, // Evita que se pueda desplazar fuera de los límites
+      bounceAtZoomLimits: false,
+      zoomControl: true
     }).setView([-27.3675, -55.8966], 13);
 
     let geoJsonLayer, selectedLayer, allFeatures;
@@ -89,16 +197,16 @@
 
     // Mapa completo para el modo de búsqueda
     const baseTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        opacity: 1
+      maxZoom: 19,
+      opacity: 1
     });
 
     // Capa de solo etiquetas para mostrar nombres de calles encima de las parcelas
     const labelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20,
-        opacity: 0.9
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20,
+      opacity: 0.9
     });
 
     // Mapa base para el modo de búsqueda
@@ -271,11 +379,11 @@
 
       // Estilo para las parcelas (azul intenso como en tu imagen)
       const style = {
-          weight: 2,
-          opacity: 1,
-          color: '#3388ff',
-          fillOpacity: 0.7,
-          fillColor: '#3388ff'
+        weight: 2,
+        opacity: 1,
+        color: '#3388ff',
+        fillOpacity: 0.7,
+        fillColor: '#3388ff'
       };
 
       if (geoJsonLayer) map.removeLayer(geoJsonLayer);
@@ -284,7 +392,7 @@
         style,
         onEachFeature: (feature, layer) => {
           layer.on({
-            click: function(e) {
+            click: function (e) {
               if (selectedLayer) {
                 selectedLayer.setStyle(style); // Restablecer el estilo anterior
               }
@@ -320,12 +428,45 @@
 
     function showParcelInfo(props) {
       if (!props) return;
+
+      // Mapeo de campos técnicos a nombres descriptivos
+      const fieldNames = {
+        'APYN': 'Propietario',
+        'SEC': 'Sección',
+        'CHA': 'Chacra',
+        'MAN': 'Manzana',
+        'PAR': 'Parcela',
+        'LOTE': 'Lote',
+        'PART': 'Partida',
+        'FINCA': 'Finca',
+        'NRODOC': 'N° DNI',
+        'IDGIS': 'ID Catastro',
+        'APYRES': 'Responsable',
+        'DOCRESPO': 'DNI Responsable',
+        'AdMapKey': 'Clave Mapa'
+      };
+
+      // Orden de visualización
+      const fieldOrder = ['APYN', 'SEC', 'CHA', 'MAN', 'PAR', 'LOTE', 'PART', 'FINCA', 'NRODOC', 'IDGIS', 'APYRES', 'DOCRESPO'];
+
       let html = '<table>';
-      for (let k in props) {
-        if (props[k]) html += `<tr><td><strong>${k}</strong></td><td>${props[k]}</td></tr>`;
+
+      // Mostrar dirección primero si existe
+      if (props.CALLE || props.NRO) {
+        let direccion = (props.CALLE || '') + ' ' + (props.NRO || '');
+        html += `<tr style="background:#f0f9f4;"><td colspan="2" style="padding:8px; font-weight:bold; color:#2e7d32; border-bottom:2px solid #3EBD84;">📍 ${direccion.trim()}</td></tr>`;
       }
+
+      // Mostrar campos en orden específico
+      fieldOrder.forEach(key => {
+        if (props[key] && props[key] !== '.' && props[key] !== 0 && props[key] !== '0') {
+          const label = fieldNames[key] || key;
+          html += `<tr><td><strong>${label}</strong></td><td>${props[key]}</td></tr>`;
+        }
+      });
+
       html += '</table>';
-      html += '<button onclick="sendToApp()" style="margin-top: 10px; padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Enviar </button>';
+      html += '<button onclick="sendToApp()" style="margin-top: 10px; padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Aceptar y continuar</button>';
       document.getElementById('parcelInfo').innerHTML = html;
       document.getElementById('infoPanel').style.display = 'block';
       window.currentParcelProperties = props;
@@ -343,7 +484,7 @@
     document.getElementById('searchInput').addEventListener('keyup', e => {
       if (e.key === 'Enter') loadGeoJson();
     });
-    map.on('click', function(e) {
+    map.on('click', function (e) {
       // Solo cerrar el panel de información si está abierto
       if (document.getElementById('infoPanel').style.display === 'block') {
         closeInfoPanel();
@@ -351,7 +492,7 @@
     });
 
     // Ajustar el tamaño cuando cambie la orientación o tamaño de pantalla
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
       if (geoJsonLayer && mapMode === 'parcels') {
         const bounds = geoJsonLayer.getBounds();
         const optimalZoom = getOptimalZoom(bounds);
@@ -361,4 +502,5 @@
     });
   </script>
 </body>
+
 </html>
